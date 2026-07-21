@@ -2,31 +2,9 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const queues = new Map();
-let redisPromise;
 
-async function redisClient() {
-  if (!process.env.REDIS_URL) return null;
-  if (!redisPromise) {
-    redisPromise = import("redis").then(async ({ createClient }) => {
-      const client = createClient({
-        url: process.env.REDIS_URL,
-        socket: { reconnectStrategy: false },
-      });
-      client.on("error", () => {});
-      await client.connect();
-      return client;
-    }).catch(() => null);
-  }
-  return redisPromise;
-}
-
-function redisKey(query) {
-  return `model-citizen:v3:${cacheKey(query)}`;
-}
-
-export async function cacheStatus() {
-  const client = await redisClient();
-  return { backend: client?.isReady ? "redis+file" : "file", redisConfigured: Boolean(process.env.REDIS_URL), redisReady: Boolean(client?.isReady) };
+export function cacheStatus() {
+  return { backend: "file" };
 }
 
 export function cacheKey(query) {
@@ -53,15 +31,6 @@ export function payloadScore(payload) {
 }
 
 export async function readCache(query, directory = path.resolve(".cache")) {
-  const client = await redisClient();
-  if (client?.isReady) {
-    try {
-      const value = await client.get(redisKey(query));
-      if (value) return JSON.parse(value);
-    } catch {
-      // The atomic file cache remains available during a Redis interruption.
-    }
-  }
   try {
     return JSON.parse(await readFile(path.join(directory, `${cacheKey(query)}.json`), "utf8"));
   } catch (error) {
@@ -83,15 +52,6 @@ export function writeCache(query, payload, directory = path.resolve(".cache")) {
     const temporary = path.join(directory, `.${key}-${process.pid}-${Date.now()}.tmp`);
     await writeFile(temporary, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
     await rename(temporary, destination);
-    const client = await redisClient();
-    if (client?.isReady) {
-      try {
-        const ttl = Math.max(60, Number(process.env.REDIS_CACHE_TTL_SECONDS || 86400));
-        await client.set(redisKey(query), JSON.stringify(payload), { EX: ttl });
-      } catch {
-        // The file write already succeeded; Redis is an acceleration layer.
-      }
-    }
     return true;
   });
   queues.set(key, current.catch(() => false));

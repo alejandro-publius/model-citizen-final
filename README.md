@@ -114,27 +114,17 @@ DEMO_MODE=1 npm start
 | `DATASF_APP_TOKEN` | No | Optional Socrata token for higher public-data limits |
 | `BROWSERBASE_API_KEY` | No | Non-API local-news retrieval in a Browserbase session |
 | `BROWSERBASE_PROJECT_ID` | No | Optional Browserbase project override |
-| `REDIS_URL` | No | Redis primary cache; atomic file cache remains the fallback |
-| `REDIS_CACHE_TTL_SECONDS` | No | Redis TTL, default `86400` seconds |
-| `UAGENTS_URL` | No | Fetch.ai/uAgents bridge, e.g. `http://localhost:8000` |
+| `BROWSERBASE_TIMEOUT_MS` | No | Failure-isolation budget for live news retrieval, default `25000` ms |
 | `PORT` | No | Express port, default `8787` |
 
 Never expose keys to the browser. Both OpenAI and Google calls are server-side, `.env` is
 ignored, and only `.env.example` is committed.
 
-Optional Fetch.ai/uAgents bridge:
-
-```bash
-python -m venv .venv
-.venv/bin/pip install -r agents/requirements.txt
-.venv/bin/python agents/model_citizen_agents.py
-```
-
 ## Cloudflare deployment — cost-safe public demo
 
 The checked-in Cloudflare Worker is deliberately locked to judge mode. It serves the
 static site and bundled evidence fixture, but it cannot call OpenAI, Google Maps,
-Browserbase, Redis, or Fetch.ai. This keeps public traffic from creating third-party API
+or Browserbase. This keeps public traffic from creating third-party API
 charges. Static assets are served by Cloudflare Assets; only `/api/*` reaches the Worker.
 
 ```bash

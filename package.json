@@ -21,7 +21,6 @@
     "playwright-core": "^1.61.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "redis": "^6.1.0",
     "three": "^0.179.1"
   },
   "devDependencies": {

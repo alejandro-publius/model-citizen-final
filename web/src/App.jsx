@@ -361,7 +361,7 @@ export default function App() {
 
         {activity.length > 0 && (
           <section className="agent-feed" aria-live="polite">
-            <div className="agent-feed-heading"><span>MULTI-AGENT ACTIVITY</span><strong>{data?.meta?.orchestration?.runtime === "fetch-ai-uagents" ? "FETCH.AI / uAGENTS" : data?.meta?.demo ? "VERIFIED FIXTURE TASKS" : "LOCAL ORCHESTRATOR"}</strong><small>Actual task events · no staged timer</small></div>
+            <div className="agent-feed-heading"><span>MULTI-AGENT ACTIVITY</span><strong>{data?.meta?.demo ? "VERIFIED FIXTURE TASKS" : "LOCAL ORCHESTRATOR"}</strong><small>Actual task events · no staged timer</small></div>
             <div className="agent-feed-grid">{activity.slice(-4).map((item, index) => <article key={`${item.at}-${index}`}><i className={item.status} /><div><b>{item.agentName || item.agent}</b><span>{item.message}</span></div><time>{item.at ? new Date(item.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : ""}</time></article>)}</div>
           </section>
         )}
@@ -484,7 +484,7 @@ export default function App() {
                   <em>{data.legislative?.disclosure}</em>
                 </section>
                 {data.meetingMinutes?.records?.length > 0 && <section className="corroboration-list"><div className="paper-trail-heading"><span>COUNCIL MEETING MINUTES</span><b>{data.meetingMinutes.records.length} OFFICIAL</b></div>{data.meetingMinutes.records.map((record) => <a href={record.url} target="_blank" rel="noreferrer" key={`${record.file}-${record.url}`}><small>FILE {record.file} · {formatDate(record.date)}</small><strong>{record.title}</strong><span>{record.detail}</span></a>)}<em>{data.meetingMinutes.disclosure}</em></section>}
-                {data.news?.articles?.length > 0 && <section className="corroboration-list news-list"><div className="paper-trail-heading"><span>NEWS CORROBORATION</span><b>{data.news.articles.length} ARTICLE</b></div>{data.news.articles.map((article) => <a href={article.url} target="_blank" rel="noreferrer" key={article.url}><small>{article.publisher} · {formatDate(article.publishedAt)}</small><strong>{article.title}</strong><span>{article.corroborates}</span></a>)}</section>}
+                {data.news?.articles?.length > 0 && <section className="corroboration-list news-list"><div className="paper-trail-heading"><span>NEWS CORROBORATION</span><b>{data.news.method === "browserbase" && data.news.sessionId ? "BROWSERBASE LIVE" : `${data.news.articles.length} ARTICLE`}</b></div>{data.news.articles.map((article) => <a href={article.url} target="_blank" rel="noreferrer" key={article.url}><small>{article.publisher} · {formatDate(article.publishedAt)}</small><strong>{article.title}</strong><span>{article.corroborates}</span></a>)}</section>}
                 {data.warnings?.length > 0 && <div className="warning-stack"><span>TRANSPARENCY NOTICES</span>{data.warnings.map((warning, index) => <p key={`${warning}-${index}`}>{warning}</p>)}</div>}
                 <button className="action-button" onClick={() => setPanel("letter")}>Open ready-to-send letter <Icon name="arrow" /></button>
               </aside>

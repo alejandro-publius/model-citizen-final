@@ -32,8 +32,9 @@ news corroboration, source provenance, and actual server-reported multi-agent ac
 The React and Three.js frontend is backed by a Node/Express pipeline that streams real
 stage and agent events over Server-Sent Events. The product integrates DataSF Socrata,
 the official Legistar API, OpenStreetMap/Overpass, Nominatim, Google Street View Static,
-Google Maps Static satellite imagery, OpenAI Responses and Images APIs, optional
-Browserbase retrieval, Redis caching, and a Fetch.ai/uAgents bridge.
+Google Maps Static satellite imagery, OpenAI Responses and Images APIs, and optional
+live Browserbase retrieval. The rest of the pipeline uses a local four-agent orchestrator
+and an atomic file cache so the demo has no additional vendor dependencies.
 
 The trust boundary is the core design decision. GPT-5.6 first sees only imagery and must
 commit to visible observations in fixed street zones. Only afterward does deterministic

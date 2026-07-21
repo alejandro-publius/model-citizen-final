@@ -72,7 +72,6 @@ app.get("/api/health", async (_request, response) => {
     satelliteConfigured: Boolean(process.env.GOOGLE_MAPS_KEY),
     imageModel: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
     browserbaseConfigured: Boolean(process.env.BROWSERBASE_API_KEY),
-    uAgentsConfigured: Boolean(process.env.UAGENTS_URL),
     agents: AGENTS,
     cache: await cacheStatus(),
   });

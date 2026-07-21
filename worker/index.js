@@ -98,9 +98,8 @@ async function handleApi(request, url) {
       satelliteConfigured: false,
       imageModel: "gpt-image-1",
       browserbaseConfigured: false,
-      uAgentsConfigured: false,
       agents: AGENTS,
-      cache: { backend: "bundled-fixture", redisConfigured: false, redisReady: false },
+      cache: { backend: "bundled-fixture" },
       hosting: "cloudflare-workers-free",
       spendingProtection: "external APIs disabled",
     });

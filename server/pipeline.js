@@ -10,7 +10,7 @@ import { fetchOsm } from "./osm.js";
 import { fetchSatellite, fetchStreetView } from "./streetview.js";
 import { runBlindVision } from "./vision.js";
 import { fetchPublicCorroboration } from "./corroboration-sources.js";
-import { AGENTS, activityEvent, dispatchUAgent } from "./orchestrator.js";
+import { AGENTS, activityEvent } from "./orchestrator.js";
 import { createPhotorealisticRenders } from "./renders.js";
 
 const SCHEMA_VERSION = 3;
@@ -60,14 +60,7 @@ export async function analyzeIntersection(query, options = {}) {
   emit({ stage: "LOOK", progress: 0, status: "active", message: `Geocoded ${location.shortLabel}.` });
 
   const googleMapsKey = options.googleMapsKey || process.env.GOOGLE_MAPS_KEY;
-  const dispatches = await Promise.allSettled(AGENTS.map((agent) => dispatchUAgent(agent.id, {
-    query: location.shortLabel,
-    lat: location.lat,
-    lng: location.lng,
-  }, { fetchImpl: options.fetchImpl })));
-  const orchestrationRuntime = dispatches.some((item) => item.status === "fulfilled" && item.value.delegated)
-    ? "fetch-ai-uagents"
-    : "local-node";
+  const orchestrationRuntime = "local-node";
   emitActivity("imagery", "active", "Fetching four street views and north-up satellite imagery.", { runtime: orchestrationRuntime });
   emitActivity("records", "active", "Fetching official crash and 311 evidence.", { runtime: orchestrationRuntime });
   emitActivity("civic", "active", "Resolving the named official and legislative trail.", { runtime: orchestrationRuntime });
@@ -147,6 +140,14 @@ export async function analyzeIntersection(query, options = {}) {
   const corroboration = corroborationResult[0].status === "fulfilled"
     ? corroborationResult[0].value
     : { news: { articles: [], warnings: [corroborationResult[0].reason.message] }, meetingMinutes: { records: [] } };
+  if (corroboration.news?.method === "browserbase" && corroboration.news?.sessionId) {
+    emitActivity(
+      "records",
+      "complete",
+      `Browserbase live session checked independent reporting and returned ${corroboration.news.articles?.length || 0} exact-location match${corroboration.news.articles?.length === 1 ? "" : "es"}.`,
+      { runtime: orchestrationRuntime, sourceRuntime: "browserbase" },
+    );
+  }
   emit({
     stage: "CHECK",
     progress: 2,
