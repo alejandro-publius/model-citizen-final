@@ -124,6 +124,23 @@ python -m venv .venv
 .venv/bin/python agents/model_citizen_agents.py
 ```
 
+## Cloudflare deployment — cost-safe public demo
+
+The checked-in Cloudflare Worker is deliberately locked to judge mode. It serves the
+static site and bundled evidence fixture, but it cannot call OpenAI, Google Maps,
+Browserbase, Redis, or Fetch.ai. This keeps public traffic from creating third-party API
+charges. Static assets are served by Cloudflare Assets; only `/api/*` reaches the Worker.
+
+```bash
+npm install
+npm run deploy:cloudflare
+```
+
+The Workers Free plan enforces its own CPU, request, and subrequest ceilings. This public
+Worker makes no external subrequests. Do not add live API secrets until authentication, a
+global usage quota, and vendor billing limits are configured. Live mode remains available
+locally through the setup above.
+
 ## GPT-5.6 integration
 
 The exact current identifier was checked against the official OpenAI model guidance before
