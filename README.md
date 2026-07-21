@@ -14,6 +14,11 @@ ships a clearly labeled synthetic pair with no licensed Google pixels.
 
 Built for **OpenAI Build Week 2026**, track **Apps for Your Life**.
 
+**Build Week provenance:** GitHub records show that the original repository and all of
+its visible commits were created on July 21, 2026. This final repository was created the
+same day, and its visible commits and pushes were made before the July 21, 2026,
+5:00 PM PDT submission deadline.
+
 **[Try the public judge demo](https://model-citizen-final.thealexschroeder.workers.dev)** ·
 **[Watch the 2:07 public video](https://youtu.be/cmlYN-MHelA)**
 
