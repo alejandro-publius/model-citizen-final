@@ -297,7 +297,7 @@ export default function App() {
         {data?.leaderboard?.intersections?.length > 0 && <CrashMap leaderboard={data.leaderboard} currentLabel={locationTitle} demo={data.meta?.demo} loading={loading} onAnalyze={runAnalysis} />}
         <section className="hero">
           <div className="eyebrow"><span>INDEPENDENT VISION</span><i /> <span>PUBLIC DATA</span><i /> <span>FUNDABLE FIXES</span></div>
-          <h1>See the street.<br /><em>Fund the fix.</em></h1>
+          <h1>Every block needs<br /><em>a model citizen.</em></h1>
           <p className="hero-copy">Turn any San Francisco intersection into an evidence-backed safety plan — with an explorable 3D before-and-after.</p>
           <form className="search-form" onSubmit={runAnalysis}>
             <Icon name="search" />
