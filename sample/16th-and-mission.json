@@ -6,7 +6,9 @@
     "lat": 37.765052,
     "lng": -122.4196893,
     "osmType": "node",
-    "osmId": 65345359
+    "osmId": 65345359,
+    "county": "San Francisco County",
+    "coverage": "city-and-county"
   },
   "civic": {
     "district": 9,
@@ -159,6 +161,36 @@
     "warnings": [],
     "disclosure": "Statuses and actions are reproduced from the official legislative record; absence of a matching record is not evidence that no action occurred."
   },
+  "news": {
+    "articles": [
+      {
+        "title": "Driver arrested after pedestrian struck and killed near 16th and Mission",
+        "url": "https://missionlocal.org/2026/05/pedestrian-struck-and-killed-near-16th-and-mission-on-monday/",
+        "publisher": "Mission Local",
+        "publishedAt": "2026-05-28T15:48:00.000Z",
+        "corroborates": "A fatal vehicle-pedestrian collision near the named intersection",
+        "sourceType": "independent local reporting"
+      }
+    ],
+    "sourceUrl": "https://missionlocal.org/?s=16th%20Mission%20traffic%20safety",
+    "method": "browserbase fixture",
+    "warnings": []
+  },
+  "meetingMinutes": {
+    "records": [
+      {
+        "file": "180066",
+        "title": "Public Safety and Neighborhood Services Committee meeting minutes",
+        "date": "2018-02-14T00:00:00.000Z",
+        "body": "Public Safety and Neighborhood Services Committee",
+        "url": "https://sfbos.org/sites/default/files/psn021418_minutes.pdf",
+        "detail": "Official minutes include the hearing on conditions and services at the 16th and Mission BART plazas.",
+        "source": "San Francisco Board of Supervisors"
+      }
+    ],
+    "source": "San Francisco Board of Supervisors",
+    "disclosure": "Minutes corroborate that the intersection appeared in an official meeting record; they do not prove that a specific treatment was approved."
+  },
   "leaderboard": {
     "district": 9,
     "recordsAnalyzed": 1233,
@@ -196,22 +228,48 @@
   "advocacy": {
     "letter": "Dear Supervisor Fielder,\n\nI am writing as a San Francisco resident to request prompt safety action at 16th Street and Mission Street. This is a busy neighborhood intersection used every day by people walking, riding transit, biking, and driving.\n\nAn independent visual survey identified worn crosswalk markings and a long, exposed crossing. Only after that blind survey was complete were the findings compared with public records. DataSF records returned for the 100-meter review area include a fatal vehicle-pedestrian collision on May 25, 2026, along with additional injury collisions involving pedestrians. Nearby 311 records also include a sidewalk-and-curb defect report. These independent signals warrant a field review and a rapid delivery plan.\n\nI am asking the City to refresh the crossing with a high-visibility continental crosswalk, estimated at $4,000, as an SS4A Demonstration project. I also ask SFMTA to evaluate corner bulb-outs, estimated at $90,000 and eligible for SS4A Implementation funding, to shorten the crossing distance. Please preserve the source records, verify current field conditions, and publish a timeline neighbors can follow.\n\nThe official crash history deserves an urgent, practical response. I would welcome a site visit and the opportunity to help share the final plan with neighbors.\n\nRespectfully,\nA concerned San Francisco resident",
     "post": "16th & Mission deserves a safer crossing. Independent street review plus official crash records point to high-visibility markings and shorter crossings. Ask the City for a funded delivery timeline.",
+    "redditTitle": "What would make 16th & Mission safer? An evidence-backed street redesign",
+    "redditBody": "I reviewed 16th & Mission using two independent evidence tracks. First, a blind visual survey looked only at street and satellite imagery. After that survey was complete, the observations were compared with official DataSF crash and 311 records. The clearest concerns were worn crosswalk markings and a long crossing distance.\n\nThe returned records include 20 injury crashes within the review area, including a fatal vehicle-pedestrian collision. The proposed starting package is a high-visibility continental crosswalk, corner bulb-outs, and a protected bike-lane segment, each paired with a planning estimate and possible grant program. These are planning concepts, not final engineering drawings or bids.\n\nThe named district contact is Supervisor Jackie Fielder. If you use this intersection, what field condition should the City verify first? Please share firsthand observations without identifying crash victims or private individuals.",
     "generatedBy": "gpt-5.6 sample fixture"
   },
-  "warnings": ["Public judge-mode fixture omits licensed Street View and satellite pixels; live mode fetches them when GOOGLE_MAPS_KEY is set."],
+  "renders": {
+    "available": true,
+    "before": "/renders/16th-mission-before-synthetic.png",
+    "after": "/renders/16th-mission-after-synthetic.png",
+    "model": "OpenAI image generation",
+    "source": "Synthetic judge-mode reference pair; live mode edits a licensed Street View input",
+    "synthetic": true
+  },
+  "warnings": ["Public judge mode omits licensed Street View and satellite pixels. Its photorealistic pair is synthetic and clearly labeled; live mode fetches and edits the real imagery when keys are configured."],
   "meta": {
     "demo": true,
     "cached": true,
     "model": "gpt-5.6",
     "generatedAt": "2026-07-21T19:40:00.000Z",
     "durationMs": 0,
-    "schemaVersion": 2,
+    "schemaVersion": 3,
     "telemetry": [
       { "stage": "LOOK", "progress": 1, "status": "complete", "message": "Loaded 3 cached blind visual findings.", "at": "2026-07-21T19:40:00.000Z" },
       { "stage": "CHECK", "progress": 2, "status": "complete", "message": "Checked 20 crashes, 5 relevant 311 reports, and 3 legislative records.", "at": "2026-07-21T19:40:00.000Z" },
       { "stage": "FIX", "progress": 3, "status": "complete", "message": "Loaded 3 grant-matched interventions.", "at": "2026-07-21T19:40:00.000Z" },
       { "stage": "ACT", "progress": 4, "status": "complete", "message": "Prepared an addressed letter for Supervisor Jackie Fielder.", "at": "2026-07-21T19:40:00.000Z" }
     ],
+    "activity": [
+      { "type": "agent", "agent": "imagery", "agentName": "Imagery agent", "status": "complete", "message": "Verified isolated visual findings and satellite-input provenance.", "runtime": "judge-fixture", "at": "2026-07-21T19:40:00.000Z" },
+      { "type": "agent", "agent": "records", "agentName": "Records agent", "status": "complete", "message": "Loaded crash, 311, news, and official meeting-minute evidence.", "runtime": "judge-fixture", "at": "2026-07-21T19:40:00.100Z" },
+      { "type": "agent", "agent": "civic", "agentName": "Civic agent", "status": "complete", "message": "Resolved Supervisor Jackie Fielder and the legislative trail.", "runtime": "judge-fixture", "at": "2026-07-21T19:40:00.200Z" },
+      { "type": "agent", "agent": "design", "agentName": "Design agent", "status": "complete", "message": "Verified three funded treatments and the photorealistic reference pair.", "runtime": "judge-fixture", "at": "2026-07-21T19:40:00.300Z" }
+    ],
+    "coverage": "San Francisco County",
+    "orchestration": {
+      "runtime": "judge-fixture",
+      "agents": [
+        { "id": "imagery", "name": "Imagery agent", "task": "Street View + satellite isolation" },
+        { "id": "records", "name": "Records agent", "task": "Crash, 311, news, and minutes" },
+        { "id": "civic", "name": "Civic agent", "task": "District official + legislative trail" },
+        { "id": "design", "name": "Design agent", "task": "Treatments, costs, and visual renders" }
+      ]
+    },
     "firewall": "Vision received street-level and satellite imagery only; crash, 311, legislative, district, and OSM data were introduced afterward.",
     "sampleDisclosure": "The visual findings and advocacy copy are a representative judge-mode fixture. DataSF records and OSM geometry were refreshed from public endpoints on 2026-07-21."
   }
