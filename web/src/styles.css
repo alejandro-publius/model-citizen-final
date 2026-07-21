@@ -62,6 +62,7 @@ main { width: min(1480px, 100%); margin: 0 auto; }
 .map-selection button { grid-column: 2; grid-row: 2/4; align-self: stretch; padding: 0 13px; border: 0; background: var(--lime); color: var(--ink); display: flex; align-items: center; gap: 7px; font-size: 7px; font-weight: 850; letter-spacing: .08em; cursor: pointer; }
 .map-selection button:disabled { opacity: .42; cursor: not-allowed; }
 .map-selection button .icon { width: 13px; }
+.map-selection em { grid-column: 1/-1; color: #94aaa3; font-family: Georgia,serif; font-size: 9px; line-height: 1.35; }
 .crash-map { min-width: 0; position: relative; background: #c7d9cf; overflow: hidden; }
 .crash-map::after { content:""; position:absolute; inset:0; pointer-events:none; box-shadow: inset 40px 0 70px rgba(21,46,45,.22); }
 .crash-map svg { width: 100%; height: 100%; min-height: 600px; display: block; }

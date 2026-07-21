@@ -1,7 +1,8 @@
 const HEADINGS = [0, 90, 180, 270];
 
-function endpoint(path, location, heading, key) {
-  const url = new URL(`https://maps.googleapis.com/maps/api/streetview/${path}`);
+export function streetViewEndpoint(path, location, heading, key) {
+  const suffix = path ? `/${path}` : "";
+  const url = new URL(`https://maps.googleapis.com/maps/api/streetview${suffix}`);
   url.searchParams.set("size", "640x640");
   url.searchParams.set("location", location);
   url.searchParams.set("heading", String(heading));
@@ -24,13 +25,13 @@ export async function fetchStreetView({ lat, lng }, key, fetchImpl = fetch) {
   return Promise.all(
     HEADINGS.map(async (heading) => {
       try {
-        const metadataResponse = await fetchImpl(endpoint("metadata", location, heading, key));
+        const metadataResponse = await fetchImpl(streetViewEndpoint("metadata", location, heading, key));
         const metadata = await metadataResponse.json();
         if (!metadataResponse.ok || metadata.status !== "OK") {
           return { heading, available: false, reason: metadata.status || "No imagery" };
         }
 
-        const imageResponse = await fetchImpl(endpoint("", location, heading, key));
+        const imageResponse = await fetchImpl(streetViewEndpoint("", location, heading, key));
         if (!imageResponse.ok) {
           return { heading, available: false, reason: `Image request ${imageResponse.status}` };
         }
@@ -63,24 +64,29 @@ export function satelliteEndpoint({ lat, lng }, key) {
 
 export async function fetchSatellite(location, key, fetchImpl = fetch) {
   if (!key) return { available: false, reason: "GOOGLE_MAPS_KEY is not configured" };
-  try {
-    const response = await fetchImpl(satelliteEndpoint(location, key));
-    const contentType = response.headers.get("content-type") || "";
-    if (!response.ok || !contentType.startsWith("image/")) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetchImpl(satelliteEndpoint(location, key));
+      const contentType = response.headers.get("content-type") || "";
+      if (!response.ok || !contentType.startsWith("image/")) {
+        const transient = response.status === 403 || response.status === 429 || response.status >= 500;
+        if (attempt === 0 && transient) continue;
+        return {
+          available: false,
+          reason: `Satellite request ${response.status}${contentType ? ` (${contentType})` : ""}`,
+        };
+      }
+      const bytes = Buffer.from(await response.arrayBuffer());
       return {
-        available: false,
-        reason: `Satellite request ${response.status}${contentType ? ` (${contentType})` : ""}`,
+        available: true,
+        image: `data:${contentType};base64,${bytes.toString("base64")}`,
+        zoom: 20,
+        orientation: "north-up",
+        source: "Google Maps Static API",
       };
+    } catch (error) {
+      if (attempt === 0) continue;
+      return { available: false, reason: error.message };
     }
-    const bytes = Buffer.from(await response.arrayBuffer());
-    return {
-      available: true,
-      image: `data:${contentType};base64,${bytes.toString("base64")}`,
-      zoom: 20,
-      orientation: "north-up",
-      source: "Google Maps Static API",
-    };
-  } catch (error) {
-    return { available: false, reason: error.message };
   }
 }

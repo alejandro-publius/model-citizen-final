@@ -43,13 +43,22 @@ function CrashMap({ leaderboard, currentLabel, demo, loading, onAnalyze }) {
     y: 350 - ((item.lat - minLat) / Math.max(0.001, maxLat - minLat)) * 280,
   });
   const selectedIsCurrent = /16th/i.test(selected?.label || "") && /mission/i.test(selected?.label || "");
+  const demoPoint = points.find((item) => /16th/i.test(item.label) && /mission/i.test(item.label)) || points[0];
+  const openSelection = (event) => {
+    if (demo && !selectedIsCurrent) {
+      setSelectedKey(demoPoint.key);
+      onAnalyze(event, demoPoint.label);
+      return;
+    }
+    onAnalyze(event, selected.label);
+  };
   return (
     <section className="crash-map-landing" aria-labelledby="crash-map-title">
       <div className="map-copy">
         <span>ALL OF SAN FRANCISCO COUNTY</span>
         <h1 id="crash-map-title">Every dot is a case<br /><em>for a safer street.</em></h1>
         <p>Explore severity-weighted injury-crash intersections, then open a complete evidence brief.</p>
-        {selected && <div className="map-selection"><small>SELECTED CORNER · RANK {selected.rank}</small><strong>{selected.label}</strong><span>{selected.crashCount} crashes · {selected.fatalCount} fatal · score {selected.score}</span><button disabled={loading || (demo && !selectedIsCurrent)} onClick={(event) => onAnalyze(event, selected.label)}>{demo && !selectedIsCurrent ? "LIVE MODE REQUIRED" : "ANALYZE THIS CORNER"}<Icon name="arrow" /></button></div>}
+        {selected && <div className="map-selection"><small>SELECTED CORNER · RANK {selected.rank}</small><strong>{selected.label}</strong><span>{selected.crashCount} crashes · {selected.fatalCount} fatal · score {selected.score}</span><button disabled={loading} onClick={openSelection}>{demo && !selectedIsCurrent ? "OPEN THE JUDGE DEMO" : "ANALYZE THIS CORNER"}<Icon name="arrow" /></button>{demo && <em>Public demo opens the complete rank 7 brief for 16th &amp; Mission.</em>}</div>}
       </div>
       <div className="crash-map" role="group" aria-label={`Clickable injury-crash map for Supervisor District ${leaderboard.district}`}>
         <div className="map-label">DISTRICT {leaderboard.district} · CLICK A DOT</div>

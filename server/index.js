@@ -6,7 +6,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { analyzeIntersection } from "./pipeline.js";
-import { cacheStatus } from "./cache.js";
+import { cacheStatus, readCache } from "./cache.js";
 import { AGENTS, activityEvent } from "./orchestrator.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -80,6 +80,15 @@ app.get("/api/health", async (_request, response) => {
 
 app.get("/api/demo", async (_request, response, next) => {
   try {
+    if (!demoMode) {
+      const cached = await readCache("16th St & Mission St, San Francisco, CA");
+      if (cached?.meta?.demo === false) {
+        return response.json({
+          ...cached,
+          meta: { ...cached.meta, cached: true, servedAt: new Date().toISOString() },
+        });
+      }
+    }
     response.json(await samplePayload());
   } catch (error) {
     next(error);

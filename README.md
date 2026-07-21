@@ -14,7 +14,13 @@ ships a clearly labeled synthetic pair with no licensed Google pixels.
 
 Built for **OpenAI Build Week 2026**, track **Apps for Your Life**.
 
-**[Watch the 2:07 public demo](https://youtu.be/cmlYN-MHelA)**
+**[Try the public judge demo](https://model-citizen-final.thealexschroeder.workers.dev)** ·
+**[Watch the 2:07 public video](https://youtu.be/cmlYN-MHelA)**
+
+Fast judge path: keep **16th St & Mission St** selected, choose **Analyze this corner**,
+toggle the 3D scene to **Proposed**, then open **Take action** for the addressed letter and
+social posts. The public deployment is cost-safe judge mode; arbitrary-corner live
+analysis remains available through the keyed local setup below.
 
 ## Why it is different
 

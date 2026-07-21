@@ -23,3 +23,13 @@ test("inferior concurrent payload cannot overwrite a complete result", async () 
   const raw = await readFile(path.join(directory, `${cacheKey("Race Street")}.json`), "utf8");
   assert.match(raw, /finding/);
 });
+
+test("a result with verified imagery upgrades an otherwise equal cache entry", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "model-citizen-imagery-"));
+  const base = { location: { lat: 1, lng: 2 }, findings: [{ id: 1 }], satellite: { available: false } };
+  const upgraded = { ...base, satellite: { available: true, image: "data:image/jpeg;base64,AQID" } };
+
+  assert.equal(await writeCache("Imagery Street", base, directory), true);
+  assert.equal(await writeCache("Imagery Street", upgraded, directory), true);
+  assert.equal((await readCache("Imagery Street", directory)).satellite.available, true);
+});

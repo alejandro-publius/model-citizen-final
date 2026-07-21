@@ -42,6 +42,9 @@ export function payloadScore(payload) {
   return (
     (payload.findings?.length || 0) * 20 +
     (payload.fixes?.length || 0) * 10 +
+    (payload.streetview?.filter((item) => item.available).length || 0) * 5 +
+    (payload.satellite?.available ? 5 : 0) +
+    (payload.renders?.available ? 5 : 0) +
     (payload.geometry?.elements?.length || 0) * 2 +
     (payload.crashes?.length || 0) +
     (payload.reports311?.length || 0) +
