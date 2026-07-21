@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n api,web -c cyan,magenta \"node --watch server/index.js\" \"vite\"",
+    "dev:cloudflare": "npm run build && wrangler dev",
     "start": "node server/index.js",
     "build": "vite build",
+    "deploy:cloudflare": "npm run build && wrangler deploy",
     "preview": "vite preview",
     "test": "node --test",
     "lint": "eslint ."
@@ -16,8 +18,10 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "openai": "^5.10.2",
+    "playwright-core": "^1.61.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "redis": "^6.1.0",
     "three": "^0.179.1"
   },
   "devDependencies": {
@@ -27,6 +31,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
-    "vite": "^7.1.3"
+    "vite": "^7.1.3",
+    "wrangler": "^4.113.0"
   }
 }

@@ -9,8 +9,11 @@ import { fetchLegislativeTrail } from "./legislative.js";
 import { fetchOsm } from "./osm.js";
 import { fetchSatellite, fetchStreetView } from "./streetview.js";
 import { runBlindVision } from "./vision.js";
+import { fetchPublicCorroboration } from "./corroboration-sources.js";
+import { AGENTS, activityEvent, dispatchUAgent } from "./orchestrator.js";
+import { createPhotorealisticRenders } from "./renders.js";
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 function shortLabel(query) {
   return String(query)
@@ -34,10 +37,16 @@ function summarize(crashes, reports311, findings) {
 export async function analyzeIntersection(query, options = {}) {
   const cached = !options.refresh && await readCache(query, options.cacheDirectory);
   const telemetry = [];
+  const activity = [];
   const emit = (event) => {
     const enriched = { ...event, at: new Date().toISOString() };
     telemetry.push(enriched);
     options.onProgress?.(enriched);
+  };
+  const emitActivity = (agent, status, message, extra) => {
+    const event = activityEvent(agent, status, message, extra);
+    activity.push(event);
+    options.onActivity?.(event);
   };
   if (cached?.meta?.schemaVersion === SCHEMA_VERSION) {
     emit({ stage: "ACT", progress: 4, status: "complete", message: "Loaded a complete cached intersection brief." });
@@ -51,6 +60,17 @@ export async function analyzeIntersection(query, options = {}) {
   emit({ stage: "LOOK", progress: 0, status: "active", message: `Geocoded ${location.shortLabel}.` });
 
   const googleMapsKey = options.googleMapsKey || process.env.GOOGLE_MAPS_KEY;
+  const dispatches = await Promise.allSettled(AGENTS.map((agent) => dispatchUAgent(agent.id, {
+    query: location.shortLabel,
+    lat: location.lat,
+    lng: location.lng,
+  }, { fetchImpl: options.fetchImpl })));
+  const orchestrationRuntime = dispatches.some((item) => item.status === "fulfilled" && item.value.delegated)
+    ? "fetch-ai-uagents"
+    : "local-node";
+  emitActivity("imagery", "active", "Fetching four street views and north-up satellite imagery.", { runtime: orchestrationRuntime });
+  emitActivity("records", "active", "Fetching official crash and 311 evidence.", { runtime: orchestrationRuntime });
+  emitActivity("civic", "active", "Resolving the named official and legislative trail.", { runtime: orchestrationRuntime });
   const [streetResult, satelliteResult, dataResult, osmResult, civicResult, legislativeResult] = await Promise.allSettled([
     fetchStreetView(location, options.googleMapsKey || process.env.GOOGLE_MAPS_KEY, options.fetchImpl),
     fetchSatellite(location, googleMapsKey, options.fetchImpl),
@@ -74,10 +94,18 @@ export async function analyzeIntersection(query, options = {}) {
   const legislative = legislativeResult.status === "fulfilled"
     ? legislativeResult.value
     : { records: [], warnings: [legislativeResult.reason.message] };
+  emitActivity("imagery", "complete", `Imagery sources returned ${streetview.filter((item) => item.available).length} street frames${satellite.available ? " plus satellite" : ""}.`, { runtime: orchestrationRuntime });
+  emitActivity("records", "complete", `Official sources returned ${data.crashes.length} crashes and ${data.reports311.length} relevant 311 reports.`, { runtime: orchestrationRuntime });
+  emitActivity("civic", "complete", civic?.supervisor ? `Resolved Supervisor ${civic.supervisor} and ${legislative.records?.length || 0} legislative matches.` : "Civic routing completed without a named officeholder.", { runtime: orchestrationRuntime });
 
   const leaderboardPromise = civic
     ? fetchDistrictLeaderboard(civic.district, options.fetchImpl)
     : Promise.resolve(null);
+  const corroborationPromise = fetchPublicCorroboration(location, legislative, {
+    apiKey: options.browserbaseApiKey,
+    projectId: options.browserbaseProjectId,
+    fetchImpl: options.fetchImpl,
+  });
 
   const availableViews = streetview.filter((item) => item.available).length;
   emit({
@@ -115,6 +143,10 @@ export async function analyzeIntersection(query, options = {}) {
   const { findings, reported } = corroborate(vision.observations, data.crashes, data.reports311);
   const leaderboardResult = await Promise.allSettled([leaderboardPromise]);
   const leaderboard = leaderboardResult[0].status === "fulfilled" ? leaderboardResult[0].value : null;
+  const corroborationResult = await Promise.allSettled([corroborationPromise]);
+  const corroboration = corroborationResult[0].status === "fulfilled"
+    ? corroborationResult[0].value
+    : { news: { articles: [], warnings: [corroborationResult[0].reason.message] }, meetingMinutes: { records: [] } };
   emit({
     stage: "CHECK",
     progress: 2,
@@ -123,6 +155,7 @@ export async function analyzeIntersection(query, options = {}) {
   });
 
   const fixes = mapFixes(findings);
+  emitActivity("design", "active", "Mapping treatments and preparing a photorealistic edit.", { runtime: orchestrationRuntime });
   const summary = summarize(data.crashes, data.reports311, findings);
   emit({
     stage: "FIX",
@@ -143,6 +176,12 @@ export async function analyzeIntersection(query, options = {}) {
     },
     { apiKey: options.openaiApiKey, model: options.model, client: options.openaiClient },
   );
+  const renders = await createPhotorealisticRenders(streetview, fixes, {
+    apiKey: options.openaiApiKey,
+    client: options.openaiClient,
+    imageModel: options.imageModel,
+  });
+  emitActivity("design", "complete", renders.available ? "Completed the photorealistic before/after edit." : `Completed treatments; render unavailable: ${renders.reason}`, { runtime: orchestrationRuntime });
   emit({
     stage: "ACT",
     progress: 4,
@@ -155,11 +194,13 @@ export async function analyzeIntersection(query, options = {}) {
   const warnings = [
     ...(data.warnings || []),
     ...(legislative.warnings || []),
+    ...(corroboration.news?.warnings || []),
     streetResult.status === "rejected" ? streetResult.reason.message : null,
     satelliteResult.status === "rejected" ? satelliteResult.reason.message : null,
     osmResult.status === "rejected" ? osmResult.reason.message : null,
     civicResult.status === "rejected" ? civicResult.reason.message : null,
     leaderboardResult[0].status === "rejected" ? leaderboardResult[0].reason.message : null,
+    corroborationResult[0].status === "rejected" ? corroborationResult[0].reason.message : null,
     vision.skipped ? vision.reason : null,
   ].filter(Boolean);
 
@@ -177,8 +218,11 @@ export async function analyzeIntersection(query, options = {}) {
     fixes,
     summary,
     legislative,
+    news: corroboration.news,
+    meetingMinutes: corroboration.meetingMinutes,
     leaderboard,
     advocacy,
+    renders,
     warnings,
     meta: {
       demo: false,
@@ -188,6 +232,9 @@ export async function analyzeIntersection(query, options = {}) {
       durationMs: Date.now() - startedAt,
       schemaVersion: SCHEMA_VERSION,
       telemetry,
+      activity,
+      coverage: "San Francisco County",
+      orchestration: { runtime: orchestrationRuntime, agents: AGENTS },
       firewall: "Vision received street-level and satellite imagery only; crash, 311, legislative, district, and OSM data were introduced afterward.",
     },
   };

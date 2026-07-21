@@ -29,6 +29,58 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
+function CrashMap({ leaderboard, currentLabel, demo, loading, onAnalyze }) {
+  const points = (leaderboard?.intersections || []).filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lng));
+  const [selectedKey, setSelectedKey] = useState("");
+  const selected = points.find((item) => item.key === selectedKey) || points.find((item) => item.label === currentLabel) || points[0];
+  if (!points.length) return null;
+  const latitudes = points.map((item) => item.lat);
+  const longitudes = points.map((item) => item.lng);
+  const minLat = Math.min(...latitudes); const maxLat = Math.max(...latitudes);
+  const minLng = Math.min(...longitudes); const maxLng = Math.max(...longitudes);
+  const position = (item) => ({
+    x: 70 + ((item.lng - minLng) / Math.max(0.001, maxLng - minLng)) * 860,
+    y: 350 - ((item.lat - minLat) / Math.max(0.001, maxLat - minLat)) * 280,
+  });
+  const selectedIsCurrent = /16th/i.test(selected?.label || "") && /mission/i.test(selected?.label || "");
+  return (
+    <section className="crash-map-landing" aria-labelledby="crash-map-title">
+      <div className="map-copy">
+        <span>ALL OF SAN FRANCISCO COUNTY</span>
+        <h1 id="crash-map-title">Every dot is a case<br /><em>for a safer street.</em></h1>
+        <p>Explore severity-weighted injury-crash intersections, then open a complete evidence brief.</p>
+        {selected && <div className="map-selection"><small>SELECTED CORNER · RANK {selected.rank}</small><strong>{selected.label}</strong><span>{selected.crashCount} crashes · {selected.fatalCount} fatal · score {selected.score}</span><button disabled={loading || (demo && !selectedIsCurrent)} onClick={(event) => onAnalyze(event, selected.label)}>{demo && !selectedIsCurrent ? "LIVE MODE REQUIRED" : "ANALYZE THIS CORNER"}<Icon name="arrow" /></button></div>}
+      </div>
+      <div className="crash-map" role="group" aria-label={`Clickable injury-crash map for Supervisor District ${leaderboard.district}`}>
+        <div className="map-label">DISTRICT {leaderboard.district} · CLICK A DOT</div>
+        <svg viewBox="0 0 1000 420" aria-label="Ranked crash intersections">
+          <path className="map-water" d="M0 0h1000v420H0z" />
+          <path className="map-land" d="M70 35 940 15 975 330 845 405 115 385 35 250Z" />
+          {[95,155,215,275,335].map((y) => <path className="map-road" key={`h${y}`} d={`M75 ${y} C 260 ${y - 45}, 650 ${y + 45}, 940 ${y - 8}`} />)}
+          {[160,310,460,610,760,885].map((x) => <path className="map-road minor" key={`v${x}`} d={`M${x} 40 C ${x - 65} 170, ${x + 55} 280, ${x - 20} 385`} />)}
+          {points.map((item) => { const point = position(item); return <g key={item.key} role="button" tabIndex="0" aria-label={`Select ${item.label}, rank ${item.rank}`} className={`crash-dot ${selected?.key === item.key ? "selected" : ""} ${item.fatalCount ? "fatal" : ""}`} onClick={() => setSelectedKey(item.key)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setSelectedKey(item.key); }}><circle cx={point.x} cy={point.y} r={8 + Math.min(12, item.score / 4)} /><text x={point.x} y={point.y + 3}>{item.rank}</text></g>; })}
+        </svg>
+        <div className="sr-only">{points.map((item) => <button key={item.key} onClick={() => setSelectedKey(item.key)}>Select {item.label}, rank {item.rank}</button>)}</div>
+        <div className="map-legend"><span><i className="fatal" />Fatality in group</span><span><i />Injury crashes</span><b>{leaderboard.recordsAnalyzed.toLocaleString()} RECORDS</b></div>
+      </div>
+    </section>
+  );
+}
+
+function RenderPair({ renders }) {
+  if (!renders?.available) return null;
+  return (
+    <section className="render-pair" aria-labelledby="render-pair-title">
+      <div className="render-heading"><div><span>PHOTOREALISTIC STREET EDIT</span><h2 id="render-pair-title">Same corner. Buildable change.</h2></div><p>{renders.synthetic ? "Synthetic judge-mode reference · not evidence" : `Live edit · ${renders.model}`}</p></div>
+      <div className="render-grid">
+        <figure><img src={renders.before} alt="Street before proposed safety treatments" /><figcaption><b>BEFORE</b><span>Existing visual condition</span></figcaption></figure>
+        <figure><img src={renders.after} alt="Photorealistic edit showing proposed safety treatments" /><figcaption><b>AFTER</b><span>Crosswalk · bulb-outs · protected bike space</span></figcaption></figure>
+      </div>
+      <small>{renders.source}</small>
+    </section>
+  );
+}
+
 function StreetReference({ items = [], satellite }) {
   const [mode, setMode] = useState("street");
   const available = items.find((item) => item.available && item.image);
@@ -113,6 +165,7 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState("");
   const [telemetry, setTelemetry] = useState([]);
+  const [activity, setActivity] = useState([]);
   const [exportStatus, setExportStatus] = useState("");
 
   useEffect(() => {
@@ -121,7 +174,7 @@ export default function App() {
         if (!response.ok) throw new Error("Could not load the judge-mode sample.");
         return response.json();
       })
-      .then((payload) => { setData(payload); setProgress(4); setTelemetry(payload.meta?.telemetry || []); })
+      .then((payload) => { setData(payload); setProgress(4); setTelemetry(payload.meta?.telemetry || []); setActivity(payload.meta?.activity || []); })
       .catch((loadError) => setError(loadError.message))
       .finally(() => setLoading(false));
   }, []);
@@ -135,6 +188,7 @@ export default function App() {
     setError("");
     setProgress(0);
     setTelemetry([]);
+    setActivity([]);
     setRemodeled(false);
     try {
       const payload = await new Promise((resolve, reject) => {
@@ -150,6 +204,11 @@ export default function App() {
           receivedEvent = true;
           const warning = JSON.parse(message.data);
           setTelemetry((events) => [...events, { stage: "NOTICE", status: "warning", message: warning.message, at: new Date().toISOString() }].slice(-8));
+        });
+        source.addEventListener("agent", (message) => {
+          receivedEvent = true;
+          const eventData = JSON.parse(message.data);
+          setActivity((events) => [...events, eventData].slice(-12));
         });
         source.addEventListener("result", (message) => {
           receivedEvent = true;
@@ -181,6 +240,7 @@ export default function App() {
       setData(payload);
       setProgress(4);
       setTelemetry(payload.meta?.telemetry || []);
+      setActivity(payload.meta?.activity || []);
     } catch (analysisError) {
       setError(analysisError.message);
     } finally {
@@ -203,6 +263,8 @@ export default function App() {
   const mailto = data?.civic?.email
     ? `mailto:${data.civic.email}?subject=${encodeURIComponent(`Street safety request: ${locationTitle}`)}&body=${encodeURIComponent(data.advocacy?.letter || "")}`
     : "";
+  const tweetUrl = data?.advocacy?.post ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.advocacy.post)}` : "";
+  const redditUrl = data?.advocacy?.redditTitle ? `https://www.reddit.com/submit?title=${encodeURIComponent(data.advocacy.redditTitle)}&text=${encodeURIComponent(data.advocacy.redditBody || "")}` : "";
 
   const downloadPostcard = async () => {
     setExportStatus("Preparing…");
@@ -232,9 +294,10 @@ export default function App() {
       </header>
 
       <main id="top">
+        {data?.leaderboard?.intersections?.length > 0 && <CrashMap leaderboard={data.leaderboard} currentLabel={locationTitle} demo={data.meta?.demo} loading={loading} onAnalyze={runAnalysis} />}
         <section className="hero">
           <div className="eyebrow"><span>INDEPENDENT VISION</span><i /> <span>PUBLIC DATA</span><i /> <span>FUNDABLE FIXES</span></div>
-          <h1>See the street.<br /><em>Fund the fix.</em></h1>
+          <h1>Every block needs<br /><em>a model citizen.</em></h1>
           <p className="hero-copy">Turn any San Francisco intersection into an evidence-backed safety plan — with an explorable 3D before-and-after.</p>
           <form className="search-form" onSubmit={runAnalysis}>
             <Icon name="search" />
@@ -284,6 +347,13 @@ export default function App() {
                 <li className={item.status === "warning" ? "warning" : ""} key={`${item.at}-${index}`}><b>{item.stage}</b><span>{item.message}</span><time>{item.at ? new Date(item.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : ""}</time></li>
               ))}
             </ol>
+          </section>
+        )}
+
+        {activity.length > 0 && (
+          <section className="agent-feed" aria-live="polite">
+            <div className="agent-feed-heading"><span>MULTI-AGENT ACTIVITY</span><strong>{data?.meta?.orchestration?.runtime === "fetch-ai-uagents" ? "FETCH.AI / uAGENTS" : data?.meta?.demo ? "VERIFIED FIXTURE TASKS" : "LOCAL ORCHESTRATOR"}</strong><small>Actual task events · no staged timer</small></div>
+            <div className="agent-feed-grid">{activity.slice(-4).map((item, index) => <article key={`${item.at}-${index}`}><i className={item.status} /><div><b>{item.agentName || item.agent}</b><span>{item.message}</span></div><time>{item.at ? new Date(item.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : ""}</time></article>)}</div>
           </section>
         )}
 
@@ -341,6 +411,8 @@ export default function App() {
               </div>
             </section>
 
+            <RenderPair renders={data.renders} />
+
             <section className="detail-grid">
               <div className="findings-panel">
                 <div className="panel-tabs">
@@ -358,7 +430,8 @@ export default function App() {
                     <div className="letter-heading"><div><span>READY TO SEND · DISTRICT {data.civic?.district || "—"}</span><h3>Letter to {data.civic?.supervisor ? `Supervisor ${data.civic.supervisor.split(" ").at(-1)}` : "your Supervisor"}</h3></div><button onClick={() => copyText(data.advocacy?.letter || "", "letter")}><Icon name="copy" />{copied === "letter" ? "Copied" : "Copy"}</button></div>
                     <pre>{data.advocacy?.letter}</pre>
                     {mailto && <a className="email-letter-button" href={mailto}><Icon name="mail" />Open addressed email to {data.civic.supervisor}</a>}
-                    <div className="social-post"><div><span>NEIGHBOR POST · {data.advocacy?.post?.length || 0}/280</span><button onClick={() => copyText(data.advocacy?.post || "", "post")}>{copied === "post" ? "Copied" : "Copy post"}</button></div><p>{data.advocacy?.post}</p></div>
+                    <div className="social-post"><div><span>X / TWEET · {data.advocacy?.post?.length || 0}/280</span><div className="social-actions"><button onClick={() => copyText(data.advocacy?.post || "", "post")}>{copied === "post" ? "Copied" : "Copy"}</button>{tweetUrl && <a href={tweetUrl} target="_blank" rel="noreferrer">POST ON X <Icon name="external" /></a>}</div></div><p>{data.advocacy?.post}</p></div>
+                    {data.advocacy?.redditTitle && <div className="reddit-post"><div><span>REDDIT POST</span><div className="social-actions"><button onClick={() => copyText(`${data.advocacy.redditTitle}\n\n${data.advocacy.redditBody}`, "reddit")}>{copied === "reddit" ? "Copied" : "Copy"}</button>{redditUrl && <a href={redditUrl} target="_blank" rel="noreferrer">OPEN REDDIT <Icon name="external" /></a>}</div></div><h4>{data.advocacy.redditTitle}</h4><p>{data.advocacy.redditBody}</p></div>}
                   </div>
                 )}
               </div>
@@ -377,7 +450,7 @@ export default function App() {
                 </article>
                 {data.civic && (
                   <article className="official-card">
-                    <span>YOUR CURRENT DISTRICT OFFICE</span>
+                    <span>NAMED OFFICIAL TO CONTACT</span>
                     <h4>Supervisor {data.civic.supervisor}</h4>
                     <p>District {data.civic.district} · {data.civic.phone}</p>
                     <small>District data verified {formatDate(data.civic.dataAsOf)}</small>
@@ -401,6 +474,8 @@ export default function App() {
                   {!data.legislative?.records?.length && <p>No exact street-name match was returned. That is not evidence that no action occurred.</p>}
                   <em>{data.legislative?.disclosure}</em>
                 </section>
+                {data.meetingMinutes?.records?.length > 0 && <section className="corroboration-list"><div className="paper-trail-heading"><span>COUNCIL MEETING MINUTES</span><b>{data.meetingMinutes.records.length} OFFICIAL</b></div>{data.meetingMinutes.records.map((record) => <a href={record.url} target="_blank" rel="noreferrer" key={`${record.file}-${record.url}`}><small>FILE {record.file} · {formatDate(record.date)}</small><strong>{record.title}</strong><span>{record.detail}</span></a>)}<em>{data.meetingMinutes.disclosure}</em></section>}
+                {data.news?.articles?.length > 0 && <section className="corroboration-list news-list"><div className="paper-trail-heading"><span>NEWS CORROBORATION</span><b>{data.news.articles.length} ARTICLE</b></div>{data.news.articles.map((article) => <a href={article.url} target="_blank" rel="noreferrer" key={article.url}><small>{article.publisher} · {formatDate(article.publishedAt)}</small><strong>{article.title}</strong><span>{article.corroborates}</span></a>)}</section>}
                 {data.warnings?.length > 0 && <div className="warning-stack"><span>TRANSPARENCY NOTICES</span>{data.warnings.map((warning, index) => <p key={`${warning}-${index}`}>{warning}</p>)}</div>}
                 <button className="action-button" onClick={() => setPanel("letter")}>Open ready-to-send letter <Icon name="arrow" /></button>
               </aside>

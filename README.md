@@ -6,6 +6,12 @@ corroborate the result. The real street is rebuilt as an explorable 3D miniature
 toggle applies priced grant-matched fixes, and an addressed resident letter opens in the
 correct Supervisor's email channel.
 
+The landing experience is now a clickable crash-dot map for San Francisco County. Each
+brief separates independent news reporting and official meeting-minute corroboration,
+streams actual agent task events, and produces email, X/Twitter, and Reddit actions. Live
+keyed mode can also create a photorealistic OpenAI image edit of the street; judge mode
+ships a clearly labeled synthetic pair with no licensed Google pixels.
+
 Built for **OpenAI Build Week 2026**, track **Apps for Your Life**.
 
 **[Watch the 2:07 public demo](https://youtu.be/cmlYN-MHelA)**
@@ -97,12 +103,43 @@ DEMO_MODE=1 npm start
 | `DEMO_MODE` | No | `1` serves the complete sample for every analysis request |
 | `OPENAI_API_KEY` | Live AI only | Blind vision pass and advocacy writing |
 | `OPENAI_MODEL` | No | Defaults to `gpt-5.6` |
+| `OPENAI_IMAGE_MODEL` | No | Image-edit model, default `gpt-image-1` |
 | `GOOGLE_MAPS_KEY` | Live vision only | Four Street View headings + one Maps Static satellite image |
 | `DATASF_APP_TOKEN` | No | Optional Socrata token for higher public-data limits |
+| `BROWSERBASE_API_KEY` | No | Non-API local-news retrieval in a Browserbase session |
+| `BROWSERBASE_PROJECT_ID` | No | Optional Browserbase project override |
+| `REDIS_URL` | No | Redis primary cache; atomic file cache remains the fallback |
+| `REDIS_CACHE_TTL_SECONDS` | No | Redis TTL, default `86400` seconds |
+| `UAGENTS_URL` | No | Fetch.ai/uAgents bridge, e.g. `http://localhost:8000` |
 | `PORT` | No | Express port, default `8787` |
 
 Never expose keys to the browser. Both OpenAI and Google calls are server-side, `.env` is
 ignored, and only `.env.example` is committed.
+
+Optional Fetch.ai/uAgents bridge:
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r agents/requirements.txt
+.venv/bin/python agents/model_citizen_agents.py
+```
+
+## Cloudflare deployment — cost-safe public demo
+
+The checked-in Cloudflare Worker is deliberately locked to judge mode. It serves the
+static site and bundled evidence fixture, but it cannot call OpenAI, Google Maps,
+Browserbase, Redis, or Fetch.ai. This keeps public traffic from creating third-party API
+charges. Static assets are served by Cloudflare Assets; only `/api/*` reaches the Worker.
+
+```bash
+npm install
+npm run deploy:cloudflare
+```
+
+The Workers Free plan enforces its own CPU, request, and subrequest ceilings. This public
+Worker makes no external subrequests. Do not add live API secrets until authentication, a
+global usage quota, and vendor billing limits are configured. Live mode remains available
+locally through the setup above.
 
 ## GPT-5.6 integration
 

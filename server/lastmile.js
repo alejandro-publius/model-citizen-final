@@ -9,8 +9,10 @@ claim in the data provided; do not invent statistics.
 district. Address the named current supervisor when civic data includes one. Explain the intersection, strongest confirmed finding and evidence, requested
 fix, cost and named grant program, then close respectfully and urgently.
 2. "post": under 280 characters, ending with a call to action.
+3. "redditTitle": under 120 characters and specific to the intersection.
+4. "redditBody": 120-220 words, grounded in the supplied evidence, with source-aware language and a constructive question for neighbors.
 
-Plain language, no melodrama. Respond ONLY with JSON: {"letter":"...","post":"..."}
+Plain language, no melodrama. Respond ONLY with JSON: {"letter":"...","post":"...","redditTitle":"...","redditBody":"..."}
 Data: ${JSON.stringify(data)}`;
 }
 
@@ -34,6 +36,8 @@ export function fallbackLastMile({ location, civic, findings, crashes, reports31
   return {
     letter: `${salutation}\n\nI am writing as a San Francisco resident to request prompt safety action at ${place}. This is a busy neighborhood intersection used every day by people walking, riding transit, biking, and driving.\n\n${hazard} ${evidence} Nearby 311 data also includes ${reportCount} street-safety-related report${reportCount === 1 ? "" : "s"} in the review area. These are independent signals: the visual survey is conducted without access to complaint or crash records, and only afterward are the results compared.\n\n${request} This is a concrete, fundable response that can shorten exposure, clarify priority, or improve visibility for people crossing. I also ask that SFMTA verify field conditions, preserve the source records, and publish a delivery timeline so neighbors can follow the work.\n\nPlease treat the official crash history with the urgency and respect it deserves. I would welcome the opportunity to support a site visit and help share the final plan with neighbors.\n\nRespectfully,\nA concerned San Francisco resident`,
     post: `${place} deserves a safer crossing. Independent street review + official records point to a fix${fix ? `: ${fix.title.toLowerCase()}` : ""}. Ask the City for a funded delivery timeline.`,
+    redditTitle: `What would make ${place} safer? An evidence-backed street redesign`,
+    redditBody: `I reviewed ${place} using two independent evidence tracks. First, a blind visual survey looked only at street and satellite imagery. After that survey was complete, the observations were compared with official DataSF crash and 311 records.${strongest ? ` The clearest visible concern was ${strongest.hazard.toLowerCase()} at the ${strongest.zone}.` : ""} The returned public records include ${crashes.length} injury-crash record${crashes.length === 1 ? "" : "s"}${fatal ? ", including a fatal collision" : ""} within the review area.\n\n${request} The planning estimate is not a bid or final engineering cost; it is a transparent starting point tied to a named funding path. The current district office is ${civic?.supervisor ? `Supervisor ${civic.supervisor}` : "still being resolved"}.\n\nIf you use this intersection, what field condition should the City verify first? Please share firsthand observations without identifying crash victims or private individuals.`,
     generatedBy: "deterministic fallback",
   };
 }

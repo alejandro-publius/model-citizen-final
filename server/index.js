@@ -6,6 +6,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { analyzeIntersection } from "./pipeline.js";
+import { cacheStatus } from "./cache.js";
+import { AGENTS, activityEvent } from "./orchestrator.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -16,6 +18,8 @@ const demoMode = process.env.DEMO_MODE === "1";
 
 async function samplePayload() {
   const payload = JSON.parse(await readFile(samplePath, "utf8"));
+  const telemetry = sampleTelemetry(payload);
+  const activity = sampleActivity(payload);
   return {
     ...payload,
     meta: {
@@ -23,6 +27,8 @@ async function samplePayload() {
       demo: true,
       cached: true,
       servedAt: new Date().toISOString(),
+      telemetry,
+      activity,
     },
   };
 }
@@ -42,12 +48,21 @@ function sampleTelemetry(payload) {
   ];
 }
 
+function sampleActivity(payload) {
+  return [
+    activityEvent("imagery", "complete", `Verified ${payload.vision?.observations?.length || 0} isolated visual findings and satellite-input provenance.`, { runtime: "judge-fixture" }),
+    activityEvent("records", "complete", `Loaded ${payload.crashes?.length || 0} crashes, ${payload.news?.articles?.length || 0} news articles, and ${payload.meetingMinutes?.records?.length || 0} minute records.`, { runtime: "judge-fixture" }),
+    activityEvent("civic", "complete", `Resolved the named contact: Supervisor ${payload.civic?.supervisor || "unavailable"}.`, { runtime: "judge-fixture" }),
+    activityEvent("design", "complete", `Verified ${payload.fixes?.length || 0} treatments and the synthetic photorealistic reference pair.`, { runtime: "judge-fixture" }),
+  ];
+}
+
 const app = express();
 app.disable("x-powered-by");
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
-app.get("/api/health", (_request, response) => {
+app.get("/api/health", async (_request, response) => {
   response.json({
     ok: true,
     demoMode,
@@ -55,6 +70,11 @@ app.get("/api/health", (_request, response) => {
     openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
     streetViewConfigured: Boolean(process.env.GOOGLE_MAPS_KEY),
     satelliteConfigured: Boolean(process.env.GOOGLE_MAPS_KEY),
+    imageModel: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+    browserbaseConfigured: Boolean(process.env.BROWSERBASE_API_KEY),
+    uAgentsConfigured: Boolean(process.env.UAGENTS_URL),
+    agents: AGENTS,
+    cache: await cacheStatus(),
   });
 });
 
@@ -93,8 +113,11 @@ app.get("/api/analyze/stream", async (request, response) => {
     if (demoMode) {
       const payload = await samplePayload();
       const telemetry = sampleTelemetry(payload);
+      const activity = sampleActivity(payload);
       telemetry.forEach((event) => sendEvent(response, "stage", event));
+      activity.forEach((event) => sendEvent(response, "agent", event));
       payload.meta.telemetry = telemetry;
+      payload.meta.activity = activity;
       sendEvent(response, "result", payload);
       sendEvent(response, "done", { ok: true });
       return response.end();
@@ -103,6 +126,7 @@ app.get("/api/analyze/stream", async (request, response) => {
     const result = await analyzeIntersection(query, {
       refresh: request.query?.refresh === "true",
       onProgress: (event) => sendEvent(response, "stage", event),
+      onActivity: (event) => sendEvent(response, "agent", event),
     });
     result.warnings?.forEach((warning) => sendEvent(response, "warning", { message: warning }));
     sendEvent(response, "result", result);
