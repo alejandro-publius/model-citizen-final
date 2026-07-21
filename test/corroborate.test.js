@@ -29,3 +29,23 @@ test("unmatched visual observations remain candidates and records remain reporte
   assert.equal(result.findings[0].status, "CANDIDATE");
   assert.equal(result.reported[0].status, "REPORTED");
 });
+
+test("generic traffic reports do not confirm bicycle or speed findings", () => {
+  const result = corroborate(
+    [
+      { zone: "north approach", hazard: "missing bike infrastructure", detail: "No protected lane." },
+      { zone: "south approach", hazard: "high vehicle speed", detail: "Vehicles move quickly." },
+      { zone: "east approach", hazard: "obstructed sightline", detail: "The view is blocked." },
+    ],
+    [],
+    [
+      { service_name: "Traffic", service_details: "General traffic concern" },
+      { service_name: "Tree Maintenance", service_details: "Tree pruning request" },
+      { service_name: "Parking Enforcement", service_details: "Parking violation" },
+    ],
+  );
+
+  assert.deepEqual(result.findings.map((finding) => finding.status), ["CANDIDATE", "CANDIDATE", "CANDIDATE"]);
+  assert.deepEqual(result.findings.map((finding) => finding.evidence.reportIndices), [[], [], []]);
+  assert.equal(result.reported.length, 3);
+});

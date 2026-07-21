@@ -9,9 +9,9 @@ const VISUAL_GROUPS = {
 
 const REPORT_GROUPS = {
   pedestrian: ["crosswalk", "crossing", "curb", "sidewalk", "pavement", "streetlight"],
-  bicycle: ["bike", "bicycle", "traffic"],
-  visibility: ["signal", "sign", "visibility", "tree", "parking"],
-  speed: ["traffic", "speed", "speeding"],
+  bicycle: ["bike", "bicycle", "cyclist", "bike lane", "bicycle lane"],
+  visibility: ["signal", "sign", "visibility", "sightline", "obstruction", "obstructed"],
+  speed: ["speed", "speeding", "speed limit", "speed hump", "speed bump"],
 };
 
 function groupsFor(hazard) {
