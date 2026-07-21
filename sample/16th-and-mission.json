@@ -1,0 +1,218 @@
+{
+  "location": {
+    "query": "16th St & Mission St",
+    "shortLabel": "16th St & Mission St",
+    "label": "16th Street & Mission Street, Mission, San Francisco, California",
+    "lat": 37.765052,
+    "lng": -122.4196893,
+    "osmType": "node",
+    "osmId": 65345359
+  },
+  "civic": {
+    "district": 9,
+    "districtName": "SUPERVISORIAL DISTRICT 9",
+    "supervisor": "Jackie Fielder",
+    "email": "Jackie.Fielder@sfgov.org",
+    "phone": "415-554-5144",
+    "dataAsOf": "2025-12-02T14:18:53.069",
+    "sourceUrl": "https://data.sfgov.org/d/cqbw-m5m3",
+    "rosterUrl": "https://sfbos.org/current-supervisors"
+  },
+  "streetview": [
+    { "heading": 0, "available": false, "reason": "Imagery intentionally omitted from the public judge-mode fixture" },
+    { "heading": 90, "available": false, "reason": "Imagery intentionally omitted from the public judge-mode fixture" },
+    { "heading": 180, "available": false, "reason": "Imagery intentionally omitted from the public judge-mode fixture" },
+    { "heading": 270, "available": false, "reason": "Imagery intentionally omitted from the public judge-mode fixture" }
+  ],
+  "satellite": {
+    "available": false,
+    "reason": "Licensed satellite pixels are intentionally omitted from the public judge-mode fixture",
+    "source": "Google Maps Static API"
+  },
+  "vision": {
+    "observations": [
+      {
+        "zone": "south crosswalk",
+        "hazard": "faded crosswalk markings",
+        "detail": "The white crossing bars appear worn and low-contrast against the roadway.",
+        "severity": "high",
+        "confidence": 0.91
+      },
+      {
+        "zone": "west crosswalk",
+        "hazard": "long crossing distance",
+        "detail": "The curb-to-curb crossing spans several vehicle lanes with no visible pedestrian refuge.",
+        "severity": "high",
+        "confidence": 0.88
+      },
+      {
+        "zone": "east approach",
+        "hazard": "missing protected bike infrastructure",
+        "detail": "The approach has shared traffic lanes but no visible protected space for riders.",
+        "severity": "medium",
+        "confidence": 0.82
+      }
+    ],
+    "overall_impression": "This is a busy, multilane urban crossing where people walking and biking have limited separation from moving traffic. The worn markings and long exposure distance make the corner feel demanding to cross.",
+    "model": "gpt-5.6",
+    "sample": true
+  },
+  "crashes": [
+    { "collision_datetime": "2026-05-25T00:12:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Fatal", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "0", "point": { "type": "Point", "coordinates": [-122.419699855, 37.765371956] } },
+    { "collision_datetime": "2026-05-05T13:33:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Broadside", "number_injured": "1" },
+    { "collision_datetime": "2026-03-31T23:22:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Rear End", "number_injured": "1" },
+    { "collision_datetime": "2026-01-27T22:41:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2025-11-05T08:09:00.000", "primary_rd": "16TH ST", "secondary_rd": "CAPP ST", "collision_severity": "Injury (Severe)", "type_of_collision": "Broadside", "number_injured": "1" },
+    { "collision_datetime": "2025-10-16T12:04:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2025-09-11T15:45:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Sideswipe", "number_injured": "1" },
+    { "collision_datetime": "2025-07-20T02:26:00.000", "primary_rd": "CAPP ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Broadside", "number_injured": "2" },
+    { "collision_datetime": "2025-07-18T11:35:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Sideswipe", "number_injured": "1" },
+    { "collision_datetime": "2025-05-20T15:00:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2025-04-30T11:40:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Broadside", "number_injured": "1" },
+    { "collision_datetime": "2025-03-29T16:19:00.000", "primary_rd": "WIESE ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2025-03-20T11:34:00.000", "primary_rd": "WIESE ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2025-03-09T13:49:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Head-On", "number_injured": "1" },
+    { "collision_datetime": "2025-02-13T15:49:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2024-12-29T01:04:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2024-08-09T10:51:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2024-07-05T01:31:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" },
+    { "collision_datetime": "2024-05-01T03:45:00.000", "primary_rd": "MISSION ST", "secondary_rd": "16TH ST", "collision_severity": "Injury (Other Visible)", "type_of_collision": "Rear End", "number_injured": "4" },
+    { "collision_datetime": "2024-04-16T12:25:00.000", "primary_rd": "16TH ST", "secondary_rd": "MISSION ST", "collision_severity": "Injury (Complaint of Pain)", "type_of_collision": "Vehicle/Pedestrian", "number_injured": "1" }
+  ],
+  "reports311": [
+    { "requested_datetime": "2026-07-17T12:34:51.000", "service_name": "MTA Parking Traffic Signs Normal Priority", "service_subtype": "stop", "service_details": "defaced ok", "address": "INTERSECTION 16TH ST, HOFF ST" },
+    { "requested_datetime": "2026-07-16T16:21:54.000", "service_name": "Graffiti Public", "service_subtype": "offensive", "service_details": "signal_box", "address": "2984 16TH ST" },
+    { "requested_datetime": "2026-07-16T11:02:37.000", "service_name": "Sidewalk and Curb", "service_subtype": "sidewalk_defect", "service_details": "lifted_sidewalk_other", "address": "3001 16TH ST" },
+    { "requested_datetime": "2026-07-15T21:39:22.000", "service_name": "Parking Enforcement", "service_subtype": "parking_on_sidewalk", "service_details": "", "address": "83 WIESE ST" },
+    { "requested_datetime": "2026-07-15T07:16:37.000", "service_name": "Tree Maintenance", "service_subtype": "overgrown_tree", "service_details": "other", "address": "1999 MISSION ST" }
+  ],
+  "geometry": {
+    "source": "https://overpass-api.de/api/interpreter",
+    "timestamp": "2026-07-21T19:35:36Z",
+    "elements": [
+      { "type": "way", "id": 254750818, "geometry": [{"lat":37.7650366,"lon":-122.4199338},{"lat":37.7650221,"lon":-122.4201633},{"lat":37.7650045,"lon":-122.4204431}], "tags": { "highway": "secondary", "lanes": "3", "name": "16th Street" } },
+      { "type": "way", "id": 514488599, "geometry": [{"lat":37.7651174,"lon":-122.4186691},{"lat":37.765108,"lon":-122.418814},{"lat":37.7650792,"lon":-122.4192615},{"lat":37.7650653,"lon":-122.4194837}], "tags": { "highway": "secondary", "lanes": "4", "name": "16th Street" } },
+      { "type": "way", "id": 681758085, "geometry": [{"lat":37.7650653,"lon":-122.4194837},{"lat":37.7650603,"lon":-122.4195714},{"lat":37.765052,"lon":-122.4196893}], "tags": { "highway": "secondary", "lanes": "4", "name": "16th Street" } },
+      { "type": "way", "id": 970291491, "geometry": [{"lat":37.7650431,"lon":-122.4198176},{"lat":37.7650366,"lon":-122.4199338}], "tags": { "highway": "secondary", "lanes": "3", "name": "16th Street" } },
+      { "type": "way", "id": 514488600, "geometry": [{"lat":37.7644058,"lon":-122.4196259},{"lat":37.7646767,"lon":-122.4196525},{"lat":37.7647705,"lon":-122.4196612}], "tags": { "highway": "secondary", "lanes": "4", "name": "Mission Street" } },
+      { "type": "way", "id": 945294694, "geometry": [{"lat":37.7647705,"lon":-122.4196612},{"lat":37.76497,"lon":-122.4196787},{"lat":37.765052,"lon":-122.4196893}], "tags": { "highway": "secondary", "lanes": "4", "name": "Mission Street" } },
+      { "type": "way", "id": 970291492, "geometry": [{"lat":37.765052,"lon":-122.4196893},{"lat":37.7651598,"lon":-122.4197003}], "tags": { "highway": "secondary", "lanes": "4", "name": "Mission Street" } },
+      { "type": "way", "id": 514488598, "geometry": [{"lat":37.7653004,"lon":-122.4197131},{"lat":37.7654421,"lon":-122.4197269},{"lat":37.7658,"lon":-122.4197605}], "tags": { "highway": "secondary", "lanes": "3", "name": "Mission Street" } },
+      { "type": "way", "id": 148032749, "geometry": [{"lat":37.765329,"lon":-122.419863},{"lat":37.7656054,"lon":-122.4198936},{"lat":37.765592,"lon":-122.4200916},{"lat":37.7653166,"lon":-122.4200617},{"lat":37.765329,"lon":-122.419863}], "tags": { "building": "yes", "height": "8" } },
+      { "type": "way", "id": 148032755, "geometry": [{"lat":37.7653159,"lon":-122.4200732},{"lat":37.765329,"lon":-122.419863},{"lat":37.7651639,"lon":-122.4198465},{"lat":37.7651508,"lon":-122.4200578},{"lat":37.7653159,"lon":-122.4200732}], "tags": { "building": "yes", "height": "17" } },
+      { "type": "way", "id": 256857778, "geometry": [{"lat":37.7654134,"lon":-122.4192859},{"lat":37.7654151,"lon":-122.4195826},{"lat":37.7658413,"lon":-122.4196193},{"lat":37.7658554,"lon":-122.4193574},{"lat":37.7654134,"lon":-122.4192859}], "tags": { "building": "yes", "height": "6" } },
+      { "type": "way", "id": 256857780, "geometry": [{"lat":37.7655379,"lon":-122.4201158},{"lat":37.765139,"lon":-122.4202589},{"lat":37.7651508,"lon":-122.4200578},{"lat":37.7655651,"lon":-122.4200992},{"lat":37.7655379,"lon":-122.4201158}], "tags": { "building": "yes", "height": "10" } },
+      { "type": "way", "id": 260351411, "geometry": [{"lat":37.764989,"lon":-122.4191666},{"lat":37.7647182,"lon":-122.4191422},{"lat":37.764697,"lon":-122.4195211},{"lat":37.7649677,"lon":-122.4195454},{"lat":37.764989,"lon":-122.4191666}], "tags": { "building": "yes", "height": "14" } },
+      { "type": "way", "id": 260351422, "geometry": [{"lat":37.7649973,"lon":-122.419018},{"lat":37.7647323,"lon":-122.4189706},{"lat":37.7647182,"lon":-122.4191422},{"lat":37.764989,"lon":-122.4191666},{"lat":37.7649973,"lon":-122.419018}], "tags": { "building": "yes", "height": "19" } },
+      { "type": "node", "id": 65345359, "lat": 37.765052, "lon": -122.4196893, "tags": { "highway": "traffic_signals" } },
+      { "type": "node", "id": 8629945995, "lat": 37.7650431, "lon": -122.4198176, "tags": { "highway": "crossing", "crossing": "traffic_signals", "crossing:markings": "zebra:bicolour" } },
+      { "type": "node", "id": 8629962433, "lat": 37.7651598, "lon": -122.4197003, "tags": { "highway": "crossing", "crossing": "traffic_signals", "crossing:markings": "zebra:bicolour" } },
+      { "type": "node", "id": 8629984228, "lat": 37.76497, "lon": -122.4196787, "tags": { "highway": "crossing", "crossing": "traffic_signals", "crossing:markings": "zebra:bicolour" } },
+      { "type": "node", "id": 8629985867, "lat": 37.7650603, "lon": -122.4195714, "tags": { "highway": "crossing", "crossing": "traffic_signals", "crossing:markings": "zebra:bicolour" } }
+    ]
+  },
+  "legislative": {
+    "records": [
+      {
+        "id": 32935,
+        "file": "180066",
+        "name": "Hearing - Conditions and Services at 16th and Mission BART Plazas",
+        "title": "Hearing to address cleanliness, safety, and availability of social services at the BART Station Plaza at 16th Street and Mission Street.",
+        "type": "Hearing",
+        "status": "Filed",
+        "body": "Public Safety and Neighborhood Services Committee",
+        "introducedAt": "2018-01-09T00:00:00",
+        "actionAt": "2018-02-14T00:00:00",
+        "action": "Board action recorded",
+        "url": "https://sfgov.legistar.com/LegislationDetail.aspx?GUID=EC5D471E-5690-417C-AF6C-6D793294AAD1&ID=32935&Options=&Search="
+      },
+      {
+        "id": 31731,
+        "file": "170156",
+        "name": "Planning Code, Zoning Map - Production, Distribution, and Repair Controls",
+        "title": "Ordinance concerning parcels along 16th Street from Mission Street to Potrero Avenue.",
+        "type": "Ordinance",
+        "status": "Passed",
+        "body": "Land Use and Transportation Committee",
+        "introducedAt": "2017-02-07T00:00:00",
+        "actionAt": "2017-05-26T00:00:00",
+        "action": "Enacted as 105-17",
+        "url": "https://sfgov.legistar.com/LegislationDetail.aspx?GUID=5DE98B54-8A98-4E42-BA05-E14B0E483671&ID=31731&Options=&Search="
+      },
+      {
+        "id": 4674,
+        "file": "020180",
+        "name": "Changing Official Width of Sidewalk",
+        "title": "Ordinance changing the official sidewalk width on Mission Street near the southwest corner of 16th and Mission Streets.",
+        "type": "Ordinance",
+        "status": "Passed",
+        "body": "Board of Supervisors",
+        "introducedAt": "2002-02-19T00:00:00",
+        "actionAt": "2002-04-19T00:00:00",
+        "action": "Board action recorded",
+        "url": "https://sfgov.legistar.com/LegislationDetail.aspx?GUID=A30EB956-E344-4C2D-96BA-3CD60A0D703A&ID=4674&Options=&Search="
+      }
+    ],
+    "searchedTerms": ["16TH ST", "MISSION ST"],
+    "sourceUrl": "https://sfgov.legistar.com/Legislation.aspx",
+    "apiUrl": "https://webapi.legistar.com/v1/sfgov",
+    "warnings": [],
+    "disclosure": "Statuses and actions are reproduced from the official legislative record; absence of a matching record is not evidence that no action occurred."
+  },
+  "leaderboard": {
+    "district": 9,
+    "recordsAnalyzed": 1233,
+    "since": "2021-01-01",
+    "methodology": "Score = 12× fatal + 5× severe + 2× pedestrian + all returned injury-crash records. Street pairs are canonicalized before grouping.",
+    "intersections": [
+      { "key": "BAY SHORE BLVD & SILVER AVE", "label": "Bay Shore Blvd & Silver Ave", "crashCount": 13, "fatalCount": 1, "severeCount": 2, "pedestrianCount": 5, "injuredCount": 17, "latestCrash": "2026-04-27T19:33:00.000", "lat": 37.73294878197051, "lng": -122.40465709732966, "score": 45, "rank": 1 },
+      { "key": "16TH ST & SOUTH VAN NESS AVE", "label": "16th St & South Van Ness Ave", "crashCount": 14, "fatalCount": 2, "severeCount": 0, "pedestrianCount": 3, "injuredCount": 17, "latestCrash": "2025-08-20T18:04:00.000", "lat": 37.76518313471027, "lng": -122.41748659457066, "score": 44, "rank": 2 },
+      { "key": "16TH ST & POTRERO AVE", "label": "16th St & Potrero Ave", "crashCount": 22, "fatalCount": 1, "severeCount": 1, "pedestrianCount": 2, "injuredCount": 29, "latestCrash": "2025-09-05T21:09:00.000", "lat": 37.765783298781656, "lng": -122.4075342296065, "score": 43, "rank": 3 },
+      { "key": "18TH ST & MISSION ST", "label": "18th St & Mission St", "crashCount": 19, "fatalCount": 0, "severeCount": 2, "pedestrianCount": 7, "injuredCount": 24, "latestCrash": "2026-01-28T18:54:00.000", "lat": 37.761835855010105, "lng": -122.41935926752771, "score": 43, "rank": 4 },
+      { "key": "16TH ST & VALENCIA ST", "label": "16th St & Valencia St", "crashCount": 18, "fatalCount": 1, "severeCount": 1, "pedestrianCount": 3, "injuredCount": 21, "latestCrash": "2025-04-24T20:29:00.000", "lat": 37.76491737750547, "lng": -122.42188644581422, "score": 41, "rank": 5 },
+      { "key": "CESAR CHAVEZ ST & SOUTH VAN NESS AVE", "label": "Cesar Chavez St & South Van Ness Ave", "crashCount": 10, "fatalCount": 2, "severeCount": 1, "pedestrianCount": 0, "injuredCount": 12, "latestCrash": "2026-02-21T23:19:00.000", "lat": 37.7482121505997, "lng": -122.41586279267656, "score": 39, "rank": 6 },
+      { "key": "16TH ST & MISSION ST", "label": "16th St & Mission St", "crashCount": 15, "fatalCount": 0, "severeCount": 0, "pedestrianCount": 9, "injuredCount": 16, "latestCrash": "2026-05-05T13:33:00.000", "lat": 37.76505133706648, "lng": -122.4196689725017, "score": 33, "rank": 7 },
+      { "key": "18TH ST & SOUTH VAN NESS AVE", "label": "18th St & South Van Ness Ave", "crashCount": 10, "fatalCount": 1, "severeCount": 1, "pedestrianCount": 3, "injuredCount": 13, "latestCrash": "2025-10-24T13:12:00.000", "lat": 37.761967528422105, "lng": -122.41717893595887, "score": 33, "rank": 8 },
+      { "key": "CESAR CHAVEZ ST & MISSION ST", "label": "Cesar Chavez St & Mission St", "crashCount": 16, "fatalCount": 0, "severeCount": 2, "pedestrianCount": 3, "injuredCount": 21, "latestCrash": "2026-02-18T19:40:00.000", "lat": 37.74816568877968, "lng": -122.41822117033469, "score": 32, "rank": 9 },
+      { "key": "18TH ST & FOLSOM ST", "label": "18th St & Folsom St", "crashCount": 9, "fatalCount": 0, "severeCount": 4, "pedestrianCount": 1, "injuredCount": 13, "latestCrash": "2026-03-17T21:21:00.000", "lat": 37.76209728822735, "lng": -122.41502965315973, "score": 31, "rank": 10 }
+    ],
+    "sourceUrl": "https://data.sfgov.org/d/ubvf-ztfx"
+  },
+  "findings": [
+    { "id": "finding-1", "zone": "south crosswalk", "hazard": "faded crosswalk markings", "detail": "The white crossing bars appear worn and low-contrast against the roadway.", "severity": "high", "confidence": 0.91, "status": "CONFIRMED", "evidence": { "crashIndices": [0,3,5,9,11,12,14,15,16,17,19], "reportIndices": [2] }, "evidenceCount": 12 },
+    { "id": "finding-2", "zone": "west crosswalk", "hazard": "long crossing distance", "detail": "The curb-to-curb crossing spans several vehicle lanes with no visible pedestrian refuge.", "severity": "high", "confidence": 0.88, "status": "CONFIRMED", "evidence": { "crashIndices": [0,3,5,9,11,12,14,15,16,17,19], "reportIndices": [2] }, "evidenceCount": 12 },
+    { "id": "finding-3", "zone": "east approach", "hazard": "missing protected bike infrastructure", "detail": "The approach has shared traffic lanes but no visible protected space for riders.", "severity": "medium", "confidence": 0.82, "status": "CANDIDATE", "evidence": { "crashIndices": [], "reportIndices": [] }, "evidenceCount": 0 }
+  ],
+  "reported": [
+    { "id": "reported-crash-1", "status": "REPORTED", "source": "Traffic crash", "detail": "Broadside · Injury (Complaint of Pain)", "date": "2026-05-05T13:33:00.000", "recordIndex": 1 },
+    { "id": "reported-311-1", "status": "REPORTED", "source": "311 report", "detail": "Graffiti Public · signal_box", "date": "2026-07-16T16:21:54.000", "recordIndex": 1 }
+  ],
+  "fixes": [
+    { "id": "fix-1", "findingId": "finding-1", "zone": "south crosswalk", "status": "CONFIRMED", "type": "crosswalk", "title": "High-visibility continental crosswalk", "cost": "$4k", "grant": "SS4A Demonstration" },
+    { "id": "fix-2", "findingId": "finding-2", "zone": "west crosswalk", "status": "CONFIRMED", "type": "bulbout", "title": "Corner bulb-outs", "cost": "$90k", "grant": "SS4A Implementation" },
+    { "id": "fix-3", "findingId": "finding-3", "zone": "east approach", "status": "CANDIDATE", "type": "bike-lane", "title": "Protected bike lane segment", "cost": "$120k/block", "grant": "CA Active Transportation Program" }
+  ],
+  "summary": { "crashCount": 20, "fatalCount": 1, "pedestrianCrashCount": 10, "severeCount": 1, "reportCount": 5, "confirmedCount": 2, "candidateCount": 1 },
+  "advocacy": {
+    "letter": "Dear Supervisor Fielder,\n\nI am writing as a San Francisco resident to request prompt safety action at 16th Street and Mission Street. This is a busy neighborhood intersection used every day by people walking, riding transit, biking, and driving.\n\nAn independent visual survey identified worn crosswalk markings and a long, exposed crossing. Only after that blind survey was complete were the findings compared with public records. DataSF records returned for the 100-meter review area include a fatal vehicle-pedestrian collision on May 25, 2026, along with additional injury collisions involving pedestrians. Nearby 311 records also include a sidewalk-and-curb defect report. These independent signals warrant a field review and a rapid delivery plan.\n\nI am asking the City to refresh the crossing with a high-visibility continental crosswalk, estimated at $4,000, as an SS4A Demonstration project. I also ask SFMTA to evaluate corner bulb-outs, estimated at $90,000 and eligible for SS4A Implementation funding, to shorten the crossing distance. Please preserve the source records, verify current field conditions, and publish a timeline neighbors can follow.\n\nThe official crash history deserves an urgent, practical response. I would welcome a site visit and the opportunity to help share the final plan with neighbors.\n\nRespectfully,\nA concerned San Francisco resident",
+    "post": "16th & Mission deserves a safer crossing. Independent street review plus official crash records point to high-visibility markings and shorter crossings. Ask the City for a funded delivery timeline.",
+    "generatedBy": "gpt-5.6 sample fixture"
+  },
+  "warnings": ["Public judge-mode fixture omits licensed Street View and satellite pixels; live mode fetches them when GOOGLE_MAPS_KEY is set."],
+  "meta": {
+    "demo": true,
+    "cached": true,
+    "model": "gpt-5.6",
+    "generatedAt": "2026-07-21T19:40:00.000Z",
+    "durationMs": 0,
+    "schemaVersion": 2,
+    "telemetry": [
+      { "stage": "LOOK", "progress": 1, "status": "complete", "message": "Loaded 3 cached blind visual findings.", "at": "2026-07-21T19:40:00.000Z" },
+      { "stage": "CHECK", "progress": 2, "status": "complete", "message": "Checked 20 crashes, 5 relevant 311 reports, and 3 legislative records.", "at": "2026-07-21T19:40:00.000Z" },
+      { "stage": "FIX", "progress": 3, "status": "complete", "message": "Loaded 3 grant-matched interventions.", "at": "2026-07-21T19:40:00.000Z" },
+      { "stage": "ACT", "progress": 4, "status": "complete", "message": "Prepared an addressed letter for Supervisor Jackie Fielder.", "at": "2026-07-21T19:40:00.000Z" }
+    ],
+    "firewall": "Vision received street-level and satellite imagery only; crash, 311, legislative, district, and OSM data were introduced afterward.",
+    "sampleDisclosure": "The visual findings and advocacy copy are a representative judge-mode fixture. DataSF records and OSM geometry were refreshed from public endpoints on 2026-07-21."
+  }
+}
