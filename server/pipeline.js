@@ -1,4 +1,5 @@
 import { readCache, writeCache } from "./cache.js";
+import { throwIfAborted, withAbortSignal } from "./abort.js";
 import { resolveCivicContext } from "./civic.js";
 import { corroborate } from "./corroborate.js";
 import { fetchDataSF, fetchDistrictLeaderboard } from "./datasf.js";
@@ -33,9 +34,14 @@ function summarize(crashes, reports311, findings) {
 }
 
 export async function analyzeIntersection(query, options = {}) {
+  const { signal } = options;
+  throwIfAborted(signal);
+  const fetchImpl = withAbortSignal(options.fetchImpl, signal);
   const cached = !options.refresh && await readCache(query, options.cacheDirectory);
+  throwIfAborted(signal);
   const telemetry = [];
   const emit = (event) => {
+    if (signal?.aborted) return;
     const enriched = { ...event, at: new Date().toISOString() };
     telemetry.push(enriched);
     options.onProgress?.(enriched);
@@ -47,19 +53,21 @@ export async function analyzeIntersection(query, options = {}) {
 
   const startedAt = Date.now();
   emit({ stage: "LOOK", progress: 0, status: "active", message: "Resolving the intersection." });
-  const location = await geocode(query, options.fetchImpl);
+  const location = await geocode(query, fetchImpl);
+  throwIfAborted(signal);
   location.shortLabel = shortLabel(query);
   emit({ stage: "LOOK", progress: 0, status: "active", message: `Geocoded ${location.shortLabel}.` });
 
   const googleMapsKey = options.googleMapsKey || process.env.GOOGLE_MAPS_KEY;
   const [streetResult, satelliteResult, dataResult, osmResult, civicResult, legislativeResult] = await Promise.allSettled([
-    fetchStreetView(location, options.googleMapsKey || process.env.GOOGLE_MAPS_KEY, options.fetchImpl),
-    fetchSatellite(location, googleMapsKey, options.fetchImpl),
-    fetchDataSF(location, options.fetchImpl),
-    fetchOsm(location, options.fetchImpl),
-    resolveCivicContext(location, options.fetchImpl),
-    fetchLegislativeTrail(location, options.fetchImpl),
+    fetchStreetView(location, options.googleMapsKey || process.env.GOOGLE_MAPS_KEY, fetchImpl),
+    fetchSatellite(location, googleMapsKey, fetchImpl),
+    fetchDataSF(location, fetchImpl),
+    fetchOsm(location, fetchImpl),
+    resolveCivicContext(location, fetchImpl),
+    fetchLegislativeTrail(location, fetchImpl),
   ]);
+  throwIfAborted(signal);
 
   const streetview = streetResult.status === "fulfilled"
     ? streetResult.value.map((view) => view.available ? view : { ...view, reason: sanitizeError(view.reason) })
@@ -81,7 +89,7 @@ export async function analyzeIntersection(query, options = {}) {
     : { records: [], warnings: [sanitizeError(legislativeResult.reason)] };
 
   const leaderboardPromise = civic
-    ? fetchDistrictLeaderboard(civic.district, options.fetchImpl)
+    ? fetchDistrictLeaderboard(civic.district, fetchImpl)
     : Promise.resolve(null);
 
   const availableViews = streetview.filter((item) => item.available).length;
@@ -99,8 +107,10 @@ export async function analyzeIntersection(query, options = {}) {
       model: options.model,
       client: options.openaiClient,
       satellite,
+      signal,
     });
   } catch (error) {
+    throwIfAborted(signal);
     vision = {
       observations: [],
       overall_impression: "The blind visual survey failed, so no visual claims are shown.",
@@ -120,6 +130,7 @@ export async function analyzeIntersection(query, options = {}) {
 
   const { findings, reported } = corroborate(vision.observations, data.crashes, data.reports311);
   const leaderboardResult = await Promise.allSettled([leaderboardPromise]);
+  throwIfAborted(signal);
   const leaderboard = leaderboardResult[0].status === "fulfilled" ? leaderboardResult[0].value : null;
   emit({
     stage: "CHECK",
@@ -147,8 +158,9 @@ export async function analyzeIntersection(query, options = {}) {
       summary,
       legislative: legislative.records?.slice(0, 3) || [],
     },
-    { apiKey: options.openaiApiKey, model: options.model, client: options.openaiClient },
+    { apiKey: options.openaiApiKey, model: options.model, client: options.openaiClient, signal },
   );
+  throwIfAborted(signal);
   emit({
     stage: "ACT",
     progress: 4,
@@ -198,6 +210,7 @@ export async function analyzeIntersection(query, options = {}) {
     },
   };
 
+  throwIfAborted(signal);
   await writeCache(query, payload, options.cacheDirectory);
   return payload;
 }

@@ -30,9 +30,40 @@ async function samplePayload() {
   };
 }
 
-function sendEvent(response, event, payload) {
-  response.write(`event: ${event}\n`);
-  response.write(`data: ${JSON.stringify(payload)}\n\n`);
+function sendEvent(write, event, payload) {
+  return write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`);
+}
+
+export function createSseConnection(request, response, {
+  keepaliveMs = 15_000,
+  setIntervalFn = setInterval,
+  clearIntervalFn = clearInterval,
+} = {}) {
+  const controller = new AbortController();
+  let disconnected = false;
+  let cleanedUp = false;
+  const isClosed = () => disconnected || response.writableEnded || response.destroyed;
+  const write = (chunk) => {
+    if (isClosed()) return false;
+    response.write(chunk);
+    return true;
+  };
+  const keepalive = setIntervalFn(() => write(": keepalive\n\n"), keepaliveMs);
+  keepalive.unref?.();
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    clearIntervalFn(keepalive);
+    request.off?.("close", onClose);
+  };
+  const onClose = () => {
+    disconnected = true;
+    if (!controller.signal.aborted) controller.abort(new Error("Client disconnected"));
+    cleanup();
+  };
+  request.on("close", onClose);
+
+  return { signal: controller.signal, isClosed, write, cleanup };
 }
 
 function sampleTelemetry(payload) {
@@ -149,32 +180,44 @@ export function createApp({ analyze = analyzeIntersection, demo = demoMode, rate
       Connection: "keep-alive",
     });
     response.flushHeaders();
+    const connection = createSseConnection(request, response);
+    const send = (event, payload) => sendEvent(connection.write, event, payload);
+    const end = () => {
+      connection.cleanup();
+      if (!connection.isClosed()) response.end();
+    };
 
     try {
       if (demo) {
         const payload = await samplePayload();
         const telemetry = sampleTelemetry(payload);
-        telemetry.forEach((event) => sendEvent(response, "stage", event));
+        telemetry.forEach((event) => send("stage", event));
         payload.meta.telemetry = telemetry;
-        sendEvent(response, "result", payload);
-        sendEvent(response, "done", { ok: true });
-        return response.end();
+        send("result", payload);
+        send("done", { ok: true });
+        end();
+        return;
       }
 
       const result = await analyze(query, {
         refresh: request.query?.refresh === "true",
-        onProgress: (event) => sendEvent(response, "stage", event),
+        onProgress: (event) => send("stage", event),
+        signal: connection.signal,
       });
-      result.warnings?.forEach((warning) => sendEvent(response, "warning", { message: warning }));
-      sendEvent(response, "result", result);
-      sendEvent(response, "done", { ok: true });
-      return response.end();
+      if (connection.isClosed()) return;
+      result.warnings?.forEach((warning) => send("warning", { message: warning }));
+      send("result", result);
+      send("done", { ok: true });
+      end();
     } catch (error) {
-      sendEvent(response, "analysis-error", {
+      if (connection.isClosed() || connection.signal.aborted) return;
+      send("analysis-error", {
         message: sanitizeError(error),
         hint: "Try judge mode with DEMO_MODE=1 if external services or keys are unavailable.",
       });
-      return response.end();
+      end();
+    } finally {
+      connection.cleanup();
     }
   });
 

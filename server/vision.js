@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { throwIfAborted } from "./abort.js";
 
 export const ZONES = [
   "NW corner", "NE corner", "SW corner", "SE corner",
@@ -47,6 +48,7 @@ function skipped(reason) {
 }
 
 export async function runBlindVision(images, options = {}) {
+  throwIfAborted(options.signal);
   const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
   const usable = images.filter((image) => image.available && image.image);
   const satellite = options.satellite?.available && options.satellite.image ? options.satellite : null;
@@ -71,9 +73,10 @@ export async function runBlindVision(images, options = {}) {
     reasoning: { effort: "low" },
     text: { verbosity: "low" },
     input: [{ role: "user", content: requestContent }],
-  });
+  }, { signal: options.signal });
 
   let response = await request(content);
+  throwIfAborted(options.signal);
   let payload;
   try {
     payload = parseModelJson(response.output_text);
@@ -82,6 +85,7 @@ export async function runBlindVision(images, options = {}) {
       ...content,
       { type: "input_text", text: "Your previous reply was not valid JSON. Reply with ONLY the requested JSON object." },
     ]);
+    throwIfAborted(options.signal);
     payload = parseModelJson(response.output_text);
   }
   payload.observations = (payload.observations || []).filter((item) => ZONES.includes(item.zone));

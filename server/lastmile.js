@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { throwIfAborted } from "./abort.js";
 import { sanitizeError } from "./errors.js";
 import { parseModelJson } from "./vision.js";
 
@@ -40,6 +41,7 @@ export function fallbackLastMile({ location, civic, findings, crashes, reports31
 }
 
 export async function generateLastMile(data, options = {}) {
+  throwIfAborted(options.signal);
   const apiKey = options.apiKey || process.env.OPENAI_API_KEY;
   if (!apiKey) return fallbackLastMile(data);
   try {
@@ -49,15 +51,18 @@ export async function generateLastMile(data, options = {}) {
       reasoning: { effort: "low" },
       text: { verbosity: "low" },
       input,
-    });
+    }, { signal: options.signal });
     let response = await request(promptFor(data));
+    throwIfAborted(options.signal);
     try {
       return { ...parseModelJson(response.output_text), generatedBy: response.model };
     } catch {
       response = await request(`${promptFor(data)}\n\nYour previous reply was not valid JSON. Reply with ONLY the requested JSON object.`);
     }
+    throwIfAborted(options.signal);
     return { ...parseModelJson(response.output_text), generatedBy: response.model };
   } catch (error) {
+    throwIfAborted(options.signal);
     return { ...fallbackLastMile(data), warning: sanitizeError(new Error("OpenAI advocacy request failed", { cause: error })) };
   }
 }
