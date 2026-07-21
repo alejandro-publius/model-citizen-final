@@ -2,6 +2,7 @@ import { readCache, writeCache } from "./cache.js";
 import { resolveCivicContext } from "./civic.js";
 import { corroborate } from "./corroborate.js";
 import { fetchDataSF, fetchDistrictLeaderboard } from "./datasf.js";
+import { sanitizeError } from "./errors.js";
 import { mapFixes } from "./fixes.js";
 import { geocode } from "./geocode.js";
 import { generateLastMile } from "./lastmile.js";
@@ -60,20 +61,24 @@ export async function analyzeIntersection(query, options = {}) {
     fetchLegislativeTrail(location, options.fetchImpl),
   ]);
 
-  const streetview = streetResult.status === "fulfilled" ? streetResult.value : [];
+  const streetview = streetResult.status === "fulfilled"
+    ? streetResult.value.map((view) => view.available ? view : { ...view, reason: sanitizeError(view.reason) })
+    : [];
   const satellite = satelliteResult.status === "fulfilled"
-    ? satelliteResult.value
-    : { available: false, reason: satelliteResult.reason.message };
+    ? satelliteResult.value.available
+      ? satelliteResult.value
+      : { ...satelliteResult.value, reason: sanitizeError(satelliteResult.value.reason) }
+    : { available: false, reason: sanitizeError(satelliteResult.reason) };
   const data = dataResult.status === "fulfilled"
     ? dataResult.value
-    : { crashes: [], reports311: [], warnings: [dataResult.reason.message] };
+    : { crashes: [], reports311: [], warnings: [sanitizeError(dataResult.reason)] };
   const geometry = osmResult.status === "fulfilled"
     ? osmResult.value
-    : { elements: [], warning: osmResult.reason.message };
+    : { elements: [], warning: sanitizeError(osmResult.reason) };
   const civic = civicResult.status === "fulfilled" ? civicResult.value : null;
   const legislative = legislativeResult.status === "fulfilled"
     ? legislativeResult.value
-    : { records: [], warnings: [legislativeResult.reason.message] };
+    : { records: [], warnings: [sanitizeError(legislativeResult.reason)] };
 
   const leaderboardPromise = civic
     ? fetchDistrictLeaderboard(civic.district, options.fetchImpl)
@@ -100,9 +105,10 @@ export async function analyzeIntersection(query, options = {}) {
       observations: [],
       overall_impression: "The blind visual survey failed, so no visual claims are shown.",
       skipped: true,
-      reason: error.message,
+      reason: new Error("OpenAI visual analysis failed", { cause: error }),
     };
   }
+  if (vision.skipped) vision = { ...vision, reason: sanitizeError(vision.reason) };
   emit({
     stage: "LOOK",
     progress: 1,
@@ -153,14 +159,14 @@ export async function analyzeIntersection(query, options = {}) {
   });
 
   const warnings = [
-    ...(data.warnings || []),
-    ...(legislative.warnings || []),
-    streetResult.status === "rejected" ? streetResult.reason.message : null,
-    satelliteResult.status === "rejected" ? satelliteResult.reason.message : null,
-    osmResult.status === "rejected" ? osmResult.reason.message : null,
-    civicResult.status === "rejected" ? civicResult.reason.message : null,
-    leaderboardResult[0].status === "rejected" ? leaderboardResult[0].reason.message : null,
-    vision.skipped ? vision.reason : null,
+    ...(data.warnings || []).map(sanitizeError),
+    ...(legislative.warnings || []).map(sanitizeError),
+    streetResult.status === "rejected" ? sanitizeError(streetResult.reason) : null,
+    satelliteResult.status === "rejected" ? sanitizeError(satelliteResult.reason) : null,
+    osmResult.status === "rejected" ? sanitizeError(osmResult.reason) : null,
+    civicResult.status === "rejected" ? sanitizeError(civicResult.reason) : null,
+    leaderboardResult[0].status === "rejected" ? sanitizeError(leaderboardResult[0].reason) : null,
+    vision.skipped ? sanitizeError(vision.reason) : null,
   ].filter(Boolean);
 
   const payload = {

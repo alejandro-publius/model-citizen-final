@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { sanitizeError } from "./errors.js";
 import { parseModelJson } from "./vision.js";
 
 function promptFor(data) {
@@ -57,6 +58,6 @@ export async function generateLastMile(data, options = {}) {
     }
     return { ...parseModelJson(response.output_text), generatedBy: response.model };
   } catch (error) {
-    return { ...fallbackLastMile(data), warning: error.message };
+    return { ...fallbackLastMile(data), warning: sanitizeError(new Error("OpenAI advocacy request failed", { cause: error })) };
   }
 }

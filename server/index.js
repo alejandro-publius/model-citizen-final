@@ -5,6 +5,7 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { sanitizeError } from "./errors.js";
 import { analyzeIntersection } from "./pipeline.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -110,7 +111,7 @@ app.get("/api/analyze/stream", async (request, response) => {
     return response.end();
   } catch (error) {
     sendEvent(response, "analysis-error", {
-      message: error.message || "Analysis failed.",
+      message: sanitizeError(error),
       hint: "Try judge mode with DEMO_MODE=1 if external services or keys are unavailable.",
     });
     return response.end();
@@ -123,9 +124,8 @@ if (existsSync(distPath)) {
 }
 
 app.use((error, _request, response, _next) => {
-  console.error(error);
   response.status(500).json({
-    error: error.message || "Analysis failed.",
+    error: sanitizeError(error),
     hint: "Try judge mode with DEMO_MODE=1 if external services or keys are unavailable.",
   });
 });

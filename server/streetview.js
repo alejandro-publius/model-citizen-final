@@ -1,3 +1,5 @@
+import { sanitizeError } from "./errors.js";
+
 const HEADINGS = [0, 90, 180, 270];
 
 function endpoint(path, location, heading, key) {
@@ -44,7 +46,7 @@ export async function fetchStreetView({ lat, lng }, key, fetchImpl = fetch) {
           copyright: metadata.copyright,
         };
       } catch (error) {
-        return { heading, available: false, reason: error.message };
+        return { heading, available: false, reason: sanitizeError(error) };
       }
     }),
   );
@@ -81,6 +83,6 @@ export async function fetchSatellite(location, key, fetchImpl = fetch) {
       source: "Google Maps Static API",
     };
   } catch (error) {
-    return { available: false, reason: error.message };
+    return { available: false, reason: sanitizeError(error) };
   }
 }

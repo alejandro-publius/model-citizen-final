@@ -1,3 +1,5 @@
+import { sanitizeError } from "./errors.js";
+
 const API_ROOT = "https://webapi.legistar.com/v1/sfgov";
 
 function normalize(value) {
@@ -114,7 +116,7 @@ export async function fetchLegislativeTrail(location, fetchImpl = fetch) {
     .map(({ matter }) => presentMatter(matter));
   const warnings = results
     .filter((result) => result.status === "rejected")
-    .map((result) => result.reason.message);
+    .map((result) => sanitizeError(result.reason));
 
   return {
     records,

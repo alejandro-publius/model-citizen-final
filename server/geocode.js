@@ -12,9 +12,14 @@ export async function geocode(query, fetchImpl = fetch) {
   url.searchParams.set("limit", "1");
   url.searchParams.set("countrycodes", "us");
 
-  const response = await fetchImpl(url, {
-    headers: { "User-Agent": USER_AGENT, "Accept-Language": "en" },
-  });
+  let response;
+  try {
+    response = await fetchImpl(url, {
+      headers: { "User-Agent": USER_AGENT, "Accept-Language": "en" },
+    });
+  } catch (error) {
+    throw new Error("Nominatim geocoding request failed", { cause: error });
+  }
   if (!response.ok) throw new Error(`Geocoding failed (${response.status}).`);
   const results = await response.json();
   if (!results.length) throw new Error("Intersection not found in San Francisco.");

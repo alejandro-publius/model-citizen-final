@@ -1,3 +1,5 @@
+import { sanitizeError } from "./errors.js";
+
 const CRASHES_URL = "https://data.sfgov.org/resource/ubvf-ztfx.json";
 const REPORTS_URL = "https://data.sfgov.org/resource/vw6y-z8j6.json";
 const STREET_TERMS = [
@@ -75,8 +77,8 @@ export async function fetchDataSF(location, fetchImpl = fetch) {
     crashes: crashesResult.status === "fulfilled" ? crashesResult.value : [],
     reports311: reportsResult.status === "fulfilled" ? reportsResult.value : [],
     warnings: [
-      crashesResult.status === "rejected" ? crashesResult.reason.message : null,
-      reportsResult.status === "rejected" ? reportsResult.reason.message : null,
+      crashesResult.status === "rejected" ? sanitizeError(crashesResult.reason) : null,
+      reportsResult.status === "rejected" ? sanitizeError(reportsResult.reason) : null,
     ].filter(Boolean),
   };
 }
