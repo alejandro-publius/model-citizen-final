@@ -1,5 +1,7 @@
 # Model Citizen
 
+[![CI](https://github.com/alejandro-publius/model-citizen-final/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandro-publius/model-citizen-final/actions/workflows/ci.yml)
+
 Type any San Francisco intersection. GPT-5.6 surveys street-level and north-up satellite
 imagery behind a blind-data firewall; crash, 311, district, and legislative records then
 corroborate the result. The real street is rebuilt as an explorable 3D miniature, one
