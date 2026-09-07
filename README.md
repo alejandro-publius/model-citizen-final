@@ -202,7 +202,9 @@ Tests cover:
 - district point-in-polygon resolution and current-office contact routing;
 - canonical street-pair grouping and severity-weighted leaderboard ranking;
 - exact legislative matching and non-inaction disclosure;
-- satellite request/prompt isolation and postcard planning-cost totals.
+- satellite request/prompt isolation and postcard planning-cost totals;
+- real HTTP requests against the Express app: malformed-query rejection, per-IP rate
+  limiting, and forwarding a client's SSE disconnect into the analyzer's abort signal.
 
 The cache scores payload completeness, serializes writes per intersection, writes
 atomically, and will not replace a stronger existing payload with an empty or thinner one.
