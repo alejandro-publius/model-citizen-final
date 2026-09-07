@@ -1,12 +1,16 @@
 # Model Citizen
 
 [![CI](https://github.com/alejandro-publius/model-citizen-final/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandro-publius/model-citizen-final/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js 20+](https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white)](package.json)
 
 Type any San Francisco intersection. GPT-5.6 surveys street-level and north-up satellite
 imagery behind a blind-data firewall; crash, 311, district, and legislative records then
 corroborate the result. The real street is rebuilt as an explorable 3D miniature, one
 toggle applies priced grant-matched fixes, and an addressed resident letter opens in the
 correct Supervisor's email channel.
+
+![Model Citizen judge-mode result for 16th St & Mission St: evidence metrics, the LOOK/CHECK/FIX/ACT pipeline feed, and the intersection brief](docs/screenshot-intersection-result.png)
 
 Built for **OpenAI Build Week 2026**, track **Apps for Your Life**.
 
@@ -56,6 +60,10 @@ The 3D scene is data-derived rather than decorative: OSM polylines become rounde
 segments, real footprints become extruded pastel buildings, and mapped crossing/signal
 nodes become street furniture. Findings use stable named zones, so a finding can anchor
 to the model even when image dimensions change.
+
+| TODAY | PROPOSED |
+| --- | --- |
+| ![3D digital twin of the intersection in its existing, TODAY state](docs/screenshot-3d-diorama.png) | ![Same 3D digital twin with the PROPOSED toggle on, showing funded interventions with cost and grant labels](docs/screenshot-proposed-fixes.png) |
 
 ## Judge mode — no keys required
 
