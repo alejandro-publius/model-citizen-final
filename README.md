@@ -124,8 +124,10 @@ implementation. The docs state that `gpt-5.6` is the family alias routing to the
 - **Stage 1:** four street-level inputs and optional north-up satellite context plus the
   blind site-survey prompt. No location name,
   crash record, complaint, or OSM tag is included.
-- **Stage 4:** only the already-corroborated findings, record summary, fixes, costs, and
-  grants are supplied for the letter and social post.
+- **Stage 4:** the already-corroborated findings, up to 25 crash and 25 311 record excerpts,
+  up to 3 legislative matches, the record summary, fixes, costs, grants, civic contact, and
+  location are supplied for the letter and social post. Stage 4 is not firewalled: it runs
+  after corroboration and intentionally has full context to write a grounded letter.
 
 Both model stages retry malformed JSON once with a narrow correction instruction, then
 fall back without crashing. Record-only evidence remains visible as `REPORTED` even when
