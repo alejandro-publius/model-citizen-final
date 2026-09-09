@@ -17,8 +17,14 @@ Data: ${JSON.stringify(data)}`;
 }
 
 export function fallbackLastMile({ location, civic, findings, crashes, reports311, fixes, summary }) {
-  const strongest = findings.find((item) => item.status === "CONFIRMED") || findings[0];
-  const fix = fixes.find((item) => item.findingId === strongest?.id) || fixes[0];
+  // Prefer a CONFIRMED finding that has its own matching fix, so the letter's
+  // fix/cost/grant always describes the SAME finding as the hazard sentence.
+  // Falling back to an unrelated fix (e.g. fixes[0]) would let the letter cite
+  // one finding's evidence while asking for a different finding's funding.
+  const strongest = findings.find((item) => item.status === "CONFIRMED" && fixes.some((fix) => fix.findingId === item.id))
+    || findings.find((item) => item.status === "CONFIRMED")
+    || findings[0];
+  const fix = fixes.find((item) => item.findingId === strongest?.id);
   const fatal = crashes.find((item) => /fatal/i.test(item.collision_severity || ""));
   const place = location.shortLabel || location.query || "this intersection";
   const evidence = fatal
